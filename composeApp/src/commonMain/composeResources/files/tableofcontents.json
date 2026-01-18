@@ -1,0 +1,861 @@
+[
+  {
+    "name": "Молитвы на все случаи жизни",
+    "item": [
+      {
+        "resid": "morningdummy",
+        "addable": "false",
+        "chsResId": "morningdummy",
+        "name": "Молитвы Утренние"
+      },
+      {
+        "resid": "eveningdummy",
+        "addable": "false",
+        "chsResId": "eveningdummy",
+        "name": "Молитвы на сон грядущим"
+      },
+      {
+        "resid": "o_vosstanovlenii_mira",
+        "addable": "true",
+        "name": "Молитва о восстановлении мира"
+      },
+      {
+        "resid": "ot_povetria",
+        "addable": "true",
+        "name": "Молитва во время распространения вредоносного поветрия чтомая"
+      },
+      {
+        "resid": "corona_afon",
+        "addable": "true",
+        "name": "Молитва митрополита Иоиля против коронавируса"
+      },
+      {
+        "resid": "angel_daily_dummy",
+        "addable": "false",
+        "chsResId": "angel_daily_dummy",
+        "name": "Молитвы ангелам на каждый день недели"
+      },
+      {
+        "resid": "OptiskihNachaloDnya",
+        "addable": "true",
+        "name": "Молитва Оптинских старцев на начало дня"
+      },
+      {
+        "resid": "ejednevnaya_parfeniya_kievskogo_1",
+        "addable": "true",
+        "name": "Молитва ежедневная иеросхимонаха Парфения Киевского"
+      },
+      {
+        "resid": "dve_utrennie_maloizvestnie_molitvi",
+        "addable": "true",
+        "name": "Две утренние малоизвестные молитвы"
+      },
+      {
+        "resid": "PeredNachalom",
+        "addable": "true",
+        "chsResId": "PeredNachalomCs",
+        "name": "Перед началом всякого дела"
+      },
+      {
+        "resid": "poOkonchaniiNorm",
+        "addable": "false",
+        "name": "По окончании дела"
+      },
+      {
+        "resid": "blagodarenieZaVsakoeDeyanieBojie",
+        "addable": "true",
+        "chsResId": "blagodarenieZaVsakoeDeyanieBojieCs",
+        "name": "Благодарение за всякое благодеяние Божие"
+      },
+      {
+        "resid": "blagosloveniePischi",
+        "addable": "false",
+        "chsResId": "blagosloveniePischiCs",
+        "name": "Молитва на благословение пищи и пития мирянам"
+      },
+      {
+        "resid": "prosvora",
+        "addable": "true",
+        "chsResId": "prosvoraCs",
+        "name": "На принятие просфоры и святой воды"
+      },
+      {
+        "resid": "oBolashih",
+        "addable": "true",
+        "chsResId": "oBolashihCs",
+        "name": "Молитвы о болящих"
+      },
+      {
+        "resid": "deti1",
+        "addable": "true",
+        "name": "Молитвы о детях"
+      },
+      {
+        "resid": "materi_optinskya",
+        "addable": "true",
+        "name": "Молитва матери о своих детях (прп. Амвросия Оптинского)"
+      },
+      {
+        "resid": "o_detyah_i_krestnikah_1",
+        "addable": "true",
+        "name": "Молитвы о детях и крестниках"
+      },
+      {
+        "resid": "IIsusu1",
+        "addable": "true",
+        "name": "Молитвы ко Господу Иисусу Христу"
+      },
+      {
+        "resid": "Bogorodice1",
+        "addable": "true",
+        "name": "Молитвы к Богородице"
+      },
+      {
+        "resid": "knig",
+        "addable": "true",
+        "name": "Молитва перед чтением духовных книг"
+      },
+      {
+        "resid": "puteshestv",
+        "addable": "false",
+        "chsResId": "puteshestvCs",
+        "name": "О путешествующих"
+      },
+      {
+        "resid": "peredvihodom",
+        "addable": "true",
+        "name": "Молитва перед выходом из дома"
+      },
+      {
+        "resid": "idushegoVcrekov",
+        "addable": "false",
+        "name": "Молитва идущего в церковь"
+      },
+      {
+        "resid": "kosme_i_damianu",
+        "addable": "true",
+        "name": "Бессребреникам и чудотворцам Косме и Дамиану"
+      },
+      {
+        "resid": "voditel",
+        "addable": "true",
+        "name": "Молитва водителя"
+      },
+      {
+        "resid": "oDarovanii",
+        "addable": "true",
+        "name": "О даровании молитвы"
+      },
+      {
+        "resid": "pered_ispovedyu_simeona",
+        "addable": "true",
+        "name": "Молитва перед исповедью Преподобного Симеона Нового Богослова"
+      },
+      {
+        "resid": "o_proshenii_zabitih_grehov",
+        "addable": "true",
+        "name": "Молитва о прощении забытых грехов Преподобного Варсонофия Великого"
+      },
+      {
+        "resid": "posle_ispovedania_grehov",
+        "addable": "true",
+        "name": "Молитва после исповедания грехов"
+      },
+      {
+        "resid": "lubimomuSvyatomu",
+        "addable": "true",
+        "name": "Молитва любимому святому"
+      },
+      {
+        "resid": "efrema_sirina",
+        "addable": "true",
+        "name": "Великопостная молитва святого Ефрема Сирина"
+      },
+      {
+        "resid": "dmitriya_rostovskogo",
+        "addable": "true",
+        "name": "Mолитва святителя Димитрия Ростовского"
+      },
+      {
+        "resid": "alexandra_svirskogo",
+        "addable": "true",
+        "name": "Молитва Преподобного Александра Свирского"
+      },
+      {
+        "resid": "lithium",
+        "addable": "true",
+        "name": "Чин литии, совершаемой мирянином дома и на кладбище"
+      },
+      {
+        "resid": "o_roditelah_jivih_1",
+        "addable": "true",
+        "name": "Молитвы о родителях (живых)"
+      },
+      {
+        "resid": "zaRoditeleyUsopshih",
+        "addable": "true",
+        "name": "Молитва детей за родителей (усопших)"
+      },
+      {
+        "resid": "molitvi_o_duhovnom_otce_1",
+        "addable": "true",
+        "name": "Молитвы о духовном отце"
+      },
+      {
+        "resid": "molitva_devici_o_zamujestve",
+        "addable": "true",
+        "name": "Молитва девицы о замужестве"
+      },
+      {
+        "resid": "oSemyeKBogorodice",
+        "addable": "true",
+        "name": "Молитва о семье ко Пресвятой Богородице"
+      },
+      {
+        "resid": "o_darovanii_detey",
+        "addable": "true",
+        "name": "Молитвы о даровании детей"
+      },
+      {
+        "resid": "o_pomoshi_v_rodah",
+        "addable": "true",
+        "name": "Молитвы о помощи в родах"
+      },
+      {
+        "resid": "pri_trudnih_rodah",
+        "addable": "true",
+        "name": "Молитвы о помощи при трудных родах"
+      },
+      {
+        "resid": "o_darovanii_terpeniya",
+        "addable": "true",
+        "name": "Молитвы о даровании терпения"
+      },
+      {
+        "resid": "egednevnaia_filareta",
+        "addable": "true",
+        "name": "Ежедневная молитва святителя Филарета, митрополита Московского"
+      },
+      {
+        "resid": "o_pribavlenii_uma",
+        "addable": "true",
+        "name": "Молитва ко Пресвятой Богородице пред иконой Ее \"Подательница ума\" или \"Прибавление ума\""
+      },
+      {
+        "resid": "mlekopitatelnice",
+        "addable": "true",
+        "name": "Молитва к Пресвятой Богородице перед Ея иконой, именуемой \"Млекопитательница\""
+      },
+      {
+        "resid": "pered_ikonoy_umagchenie_ili_semistrelnaya",
+        "addable": "true",
+        "name": "Пресвятой Богородице перед Ее иконой \"Умягчение Злых Сердец\", или \"Семистрельная\""
+      },
+      {
+        "resid": "vsetsarice",
+        "addable": "true",
+        "name": "Пресвятой Богородице в честь Ее иконы \"Всецарица\" (Пантанасса)"
+      },
+      {
+        "resid": "oUmnojeniiLyubvi",
+        "addable": "true",
+        "chsResId": "oUmnojeniiLyubviCs",
+        "name": "Об умножении любви и искоренении ненависти и всякой злобы"
+      },
+      {
+        "resid": "voVremaBedstviyaInapadeniyaVragov",
+        "addable": "true",
+        "chsResId": "voVremaBedstviyaInapadeniyaVragovCs",
+        "name": "Во время бедствия и при нападении врагов"
+      },
+      {
+        "resid": "oNenavidashixIobidashix",
+        "addable": "true",
+        "chsResId": "oNenavidashixIobidashixCs",
+        "name": "О ненавидящих и обидящих нас"
+      },
+      {
+        "resid": "ob_obrashenii_zabludshego",
+        "addable": "true",
+        "name": "Об обращении заблудшего. Молитва к Божией Матери (Святителя Гавриила Новгородского)"
+      },
+      {
+        "resid": "na_bran_bluda",
+        "addable": "true",
+        "name": "Молитва на брань блуда"
+      },
+      {
+        "resid": "presleduemogo",
+        "addable": "true",
+        "name": "Молитва преследуемого человеками"
+      },
+      {
+        "resid": "za_neveruushih_i_goniteley",
+        "addable": "true",
+        "name": "Молитва за неверующих, гонителей и презрителей правды"
+      },
+      {
+        "resid": "protiv_anti",
+        "addable": "true",
+        "name": "Молитва против антихриста"
+      },
+      {
+        "resid": "v_pechali",
+        "addable": "true",
+        "name": "Молитва в печали по Богу"
+      },
+      {
+        "resid": "nectarii_optinskii",
+        "addable": "true",
+        "name": "Молитва прп. Нектария Оптинского"
+      },
+      {
+        "resid": "ot_nochnix_strahovaniy",
+        "addable": "true",
+        "name": "Молитва от ночных страхований"
+      },
+      {
+        "resid": "Kronshtadt",
+        "addable": "true",
+        "name": "Молитвы св.Иоанна Кронштадского"
+      },
+      {
+        "resid": "iz_tvoreniy_efrema_sirina",
+        "addable": "true",
+        "name": "Молитва из творений св. Ефрема Сирина"
+      },
+      {
+        "resid": "o_darovanii_pokayannogo_ch_ignatiya_br",
+        "addable": "true",
+        "name": "Молитва о даровании покаянного чувства, свт. Игнатия Брянчанинова"
+      },
+      {
+        "resid": "molitva_na_son",
+        "addable": "true",
+        "name": "Молитва на сон"
+      },
+      {
+        "resid": "o_rossii",
+        "addable": "true",
+        "name": "Молитвы о России"
+      },
+      {
+        "resid": "o_mire_v_ukraine",
+        "addable": "true",
+        "name": "Молитва о мире в Украине"
+      },
+      {
+        "resid": "noviiDom",
+        "addable": "true",
+        "name": "Молитва на вхождение в новый дом"
+      },
+      {
+        "resid": "o_primirenii_vrajduushih",
+        "addable": "true",
+        "name": "Молитва о примирении враждующих"
+      },
+      {
+        "resid": "pered_ucheniem",
+        "addable": "true",
+        "name": "Молитва перед учением"
+      },
+      {
+        "resid": "posle_ucheniya",
+        "addable": "true",
+        "name": "Молитва после учения"
+      },
+      {
+        "resid": "ob_otroke_ploho_uchashemsa",
+        "addable": "true",
+        "name": "Молитва об отроке неудобоучащемся (Плохо учащемся)"
+      },
+      {
+        "resid": "hvalebnaya_amvrosia",
+        "addable": "true",
+        "name": "Песнь хвалебная святого Амвросия, епископа Медиоланского"
+      },
+      {
+        "resid": "happyBirthdayToYou",
+        "addable": "false",
+        "name": "Молитва в день рождения"
+      },
+      {
+        "resid": "happyNewYear",
+        "addable": "false",
+        "name": "Молитва в день Hового года"
+      }
+    ]
+  },
+  {
+    "name": "Каноны и Акафисты",
+    "item": [
+      {
+        "resid": "trehcannonbeginning",
+        "addable": "true",
+        "chsResId": "trehcannonbeginningCs",
+        "name": "Трёхканонник"
+      },
+      {
+        "resid": "cannon_pokayanniy",
+        "addable": "true",
+        "chsResId": "cannon_pokayanniyCs",
+        "name": "Канон покаянный ко Господу нашему Иисусу Христу"
+      },
+      {
+        "resid": "canon_molebniy_presv_bogorodice",
+        "addable": "true",
+        "name": "Канон молебный ко Пресвятой Богородице"
+      },
+      {
+        "resid": "canon_angelu_hranitelu",
+        "addable": "true",
+        "name": "Канон Ангелу Хранителю"
+      },
+      {
+        "resid": "posledovanie",
+        "addable": "false",
+        "chsResId": "posledovanieCS",
+        "name": "Последование ко Святому Причащению"
+      },
+      {
+        "resid": "PoPrichastiyu",
+        "addable": "false",
+        "chsResId": "PoPrichastiyuCs",
+        "name": "Благодарственные молитвы по Святом Причащении"
+      },
+      {
+        "resid": "cannonPashalnii",
+        "addable": "false",
+        "name": "Пасхальный канон"
+      },
+      {
+        "resid": "canonZaBolashih",
+        "addable": "true",
+        "name": "Канон за болящих"
+      },
+      {
+        "resid": "AcafistIiSusuSladchaishemu",
+        "addable": "false",
+        "name": "Акафист Иисусу Сладчайшему"
+      },
+      {
+        "resid": "AcafistPresvyatoyBogorodice",
+        "addable": "false",
+        "name": "Акафист Пресвятой Богородице"
+      },
+      {
+        "resid": "canon_krestu",
+        "addable": "false",
+        "name": "Канон Святому и Животворящему Кресту"
+      },
+      {
+        "resid": "acathistAngeluHranitelu",
+        "addable": "true",
+        "name": "Акафист святому Ангелу Хранителю"
+      },
+      {
+        "resid": "acafistNikolayu",
+        "addable": "false",
+        "chsResId": "acafistNikolayuCs",
+        "name": "Акафист святителю Николаю Чудотворцу"
+      },
+      {
+        "resid": "acathist_matrone",
+        "addable": "false",
+        "name": "Акафист святой Матроне Московской"
+      },
+      {
+        "resid": "acathistPanteleimonu",
+        "addable": "false",
+        "name": "Акафист святому великомученику и целителю Пантелеимону"
+      },
+      {
+        "resid": "acathist_serapimu",
+        "addable": "false",
+        "name": "Акафист преподобному Серафиму, Саровскому чудотворцу"
+      },
+      {
+        "resid": "slava_bogu_za_vse",
+        "addable": "false",
+        "name": "Акафист благодарственный \"Слава Богу за всё\""
+      },
+      {
+        "resid": "acathistMihailuArchangelu",
+        "addable": "false",
+        "name": "Акафист Акафист Архангелу Михаилу"
+      },
+      {
+        "resid": "acathistUmagchenieZlihSerdec",
+        "addable": "false",
+        "name": "Акафист Пресвятой Богородице перед иконой \"Умягчение злых сердец\""
+      },
+      {
+        "resid": "acathist_kiprianu_iustine",
+        "addable": "false",
+        "name": "Акафист священномученикам Киприану и Иустине"
+      },
+      {
+        "resid": "acathistSpiridonuTrimifundtskomu_1",
+        "addable": "false",
+        "name": "Акафист святителю Спиридону Тримифунтскому"
+      },
+      {
+        "resid": "acathistIoannuPredteche",
+        "addable": "false",
+        "name": "Акафист святому славному пророку, Предтече и Крестителю Господню Иоанну"
+      },
+      {
+        "resid": "acathistNeupivaemayaChasha",
+        "addable": "false",
+        "name": "Акафист Пресвятой Богородице пред иконой \"Неупиваемая Чаша\""
+      },
+      {
+        "resid": "acathistBogorodiceSkoroposlushnica",
+        "addable": "false",
+        "name": "Акафист Пресвятой Богородице перед иконой \"Скоропослушница\""
+      },
+      {
+        "resid": "acathist_nechayannaya_radost",
+        "addable": "false",
+        "name": "Акафист Пресвятой Богородице пред иконой \"Нечаянная Радость\""
+      },
+      {
+        "resid": "acathist_pribavlenie_uma",
+        "addable": "false",
+        "name": "Акафист Пресвятой Богородице пред иконой \"Прибавление ума\""
+      },
+      {
+        "resid": "cannon_paisiyu_velikomu",
+        "addable": "false",
+        "name": "Канон преподобному Паисию Великому об избавлении от мук умерших без покаяния"
+      },
+      {
+        "resid": "pravilo_ot_oskverneniya",
+        "addable": "false",
+        "chsResId": "pravilo_ot_oskverneniyaCs",
+        "name": "Правило от осквернения"
+      },
+      {
+        "resid": "andrey_kritskiy_1",
+        "addable": "false",
+        "name": "Великий канон свт. Андрея Критского в понедельник первой седмицы Великого поста"
+      },
+      {
+        "resid": "andrey_kritskiy_2",
+        "addable": "false",
+        "name": "Великий канон свт. Андрея Критского во вторник первой седьмицы Великаго поста"
+      },
+      {
+        "resid": "andrey_kritskiy_3",
+        "addable": "false",
+        "name": "Великий канон свт. Андрея Критского в среду первой седьмицы Великаго поста"
+      },
+      {
+        "resid": "andrey_kritskiy_4",
+        "addable": "false",
+        "name": "Великий канон свт. Андрея Критского в четверг первой седьмицы Великаго поста"
+      }
+    ]
+  },
+  {
+    "name": "Молитвы Святым",
+    "item": [
+      {
+        "resid": "nikolay_chudotvorec",
+        "addable": "true",
+        "name": "Молитва святителю Николаю, Мирликийскому чудотворцу"
+      },
+      {
+        "resid": "svatitelu_nikolayu",
+        "addable": "true",
+        "name": "Другая молитва святителю Николаю"
+      },
+      {
+        "resid": "ioann_kronshtadskiy",
+        "addable": "true",
+        "name": "Молитва святому праведному Иоанну, Кронштадтскому чудотворцу"
+      },
+      {
+        "resid": "kseniya_peterburjskaya",
+        "addable": "true",
+        "name": "Молитва святой блаженной Ксении Петербургской"
+      },
+      {
+        "resid": "georgii_pobedonosec",
+        "addable": "true",
+        "name": "Молитва святому великомученику и Победоносцу Георгию"
+      },
+      {
+        "resid": "tamare",
+        "addable": "true",
+        "name": "Молитва святой царице Грузинской Тамаре"
+      },
+      {
+        "resid": "soboru_dvenadcati",
+        "addable": "true",
+        "name": "Молитва Собору двенадцати Апостолов"
+      },
+      {
+        "resid": "seraphim_sarovskiy",
+        "addable": "true",
+        "name": "Молитва преподобному Серафиму, Саровскому чудотворцу"
+      },
+      {
+        "resid": "sergiyu_radonejskomu",
+        "addable": "true",
+        "name": "Молитва преподобному Сергию Радонежскому, Всея России чудотворцу"
+      },
+      {
+        "resid": "panteleimon",
+        "addable": "true",
+        "name": "Святому великомученику и целителю Пантелеимону"
+      },
+      {
+        "resid": "vsem_svyatim_v_rossii_prosiyavshim",
+        "addable": "true",
+        "name": "Mолитва всем святым, в земле Российской просиявшим"
+      },
+      {
+        "resid": "vera_nadejda_lyubov_sofiya",
+        "addable": "true",
+        "name": "Молитва Вере, Надежде, Любви и матери их Софии"
+      },
+      {
+        "resid": "nine_gruzii",
+        "addable": "true",
+        "name": "Молитва святой равноапостольной Нине, просветительнице Грузии"
+      },
+      {
+        "resid": "spiridonu_trimifuntskomu",
+        "addable": "true",
+        "name": "Святителю Спиридону Тримифунтскому"
+      },
+      {
+        "resid": "nikolay_vtoroy",
+        "addable": "true",
+        "name": "Молитва Святому Царю Страстотерпцу Николаю"
+      },
+      {
+        "resid": "soroka_sevastiyskim",
+        "addable": "true",
+        "name": "Молитва сорока святым мученикам Севастийским"
+      },
+      {
+        "resid": "marii_egipetskoi_1",
+        "addable": "true",
+        "name": "Преподобной Марии Египетской"
+      },
+      {
+        "resid": "matrone_1",
+        "addable": "true",
+        "name": "Молитва первая святой Матроне Московской"
+      },
+      {
+        "resid": "matrone_2",
+        "addable": "true",
+        "name": "Молитва вторая святой Матроне Московской"
+      },
+      {
+        "resid": "kiprianu_i_iustini_1",
+        "addable": "true",
+        "name": "Священномученику Киприану и мученице Иустине"
+      },
+      {
+        "resid": "kirillu_i_marii_roditelam_sergia_radonejskogo",
+        "addable": "true",
+        "name": "Молитва преподобным Кириллу и Марии, родителям преподобного Сергия Радонежского"
+      },
+      {
+        "resid": "tihonu_zadonskomu",
+        "addable": "true",
+        "name": "Молитва святителю Тихону Задонскому"
+      },
+      {
+        "resid": "kirillu_i_mephodiyu",
+        "addable": "true",
+        "name": "Молитва святым равноапостольным Кириллу и Мефодию"
+      },
+      {
+        "resid": "ravnoapostolnoy_olge",
+        "addable": "true",
+        "name": "Молитва святой равноапостольной княгине Ольге"
+      },
+      {
+        "resid": "petru_i_fevronii",
+        "addable": "true",
+        "name": "Молитвы святым благоверным князю Петру и княгине Февронии Муромским"
+      },
+      {
+        "resid": "pafnutiyu",
+        "addable": "true",
+        "name": "Молитва преподобному Пафнутию, игумену Боровскому"
+      },
+      {
+        "resid": "prokopiyu",
+        "addable": "true",
+        "name": "Молитва святому великомученику Прокопию"
+      },
+      {
+        "resid": "praskevePyatnice",
+        "addable": "true",
+        "name": "Святой мученице Параскеве, нареченной Пятница"
+      },
+      {
+        "resid": "mucheniku_trifonu",
+        "addable": "true",
+        "name": "Святому мученику Трифону"
+      },
+      {
+        "resid": "vladimiru",
+        "addable": "true",
+        "name": "Молитва святому равноапостольному Великому Князю Владимиру"
+      },
+      {
+        "resid": "vasiliyu_blajennomu",
+        "addable": "true",
+        "name": "Молитва святому блаженному Василию, Христа ради юродивому Московскому"
+      },
+      {
+        "resid": "novomuchennikam",
+        "addable": "true",
+        "name": "Mолитва новомученикам и исповедникам Российским"
+      },
+      {
+        "resid": "joseph_volotskiy",
+        "addable": "true",
+        "name": "Молитва святому преподобному Иосифу Волоцкому"
+      },
+      {
+        "resid": "konstantinu_i_elene",
+        "addable": "true",
+        "name": "Молитва святым равноапостольным Константину и Елене"
+      },
+      {
+        "resid": "aleksiy_moskovskiy",
+        "addable": "true",
+        "name": "Молитва святителю Алексию, митрополиту Московскому, чудотворцу"
+      },
+      {
+        "resid": "andrey_pervozvanniy",
+        "addable": "true",
+        "name": "Молитва святому апостолу Андрею Первозванному"
+      },
+      {
+        "resid": "dmitriy_rostovskiy",
+        "addable": "true",
+        "name": "Молитва святителю Димитрию, Ростовскому чудотворцу"
+      },
+      {
+        "resid": "alexandr_svirskiy",
+        "addable": "true",
+        "name": "Молитва преподобному Александру Свирскому"
+      },
+      {
+        "resid": "siluan_afonskiy",
+        "addable": "true",
+        "name": "Молитва святому преподобному Силуану Афонскому"
+      },
+      {
+        "resid": "adrian_i_natalii",
+        "addable": "true",
+        "name": "Молитва мученикам Адриану и Наталии"
+      },
+      {
+        "resid": "amvrosiu_optinskomu",
+        "addable": "true",
+        "name": "Преподобному Амвросию Оптинскому"
+      },
+      {
+        "resid": "anastasii_uzoreshitelnice",
+        "addable": "true",
+        "name": "Святой великомученице Анастасии Узорешительнице"
+      },
+      {
+        "resid": "andreyu_kritskomu",
+        "addable": "true",
+        "name": "Святителю Андрею Критскому"
+      },
+      {
+        "resid": "vlasiyu",
+        "addable": "true",
+        "name": "Молитва Священномученику Власию, епископу Севастийскому"
+      },
+      {
+        "resid": "luke_crimskomu",
+        "addable": "true",
+        "name": "Молитва святителю Луке, исповеднику, архиепископу Крымскому"
+      },
+      {
+        "resid": "tihon_patriarh",
+        "addable": "true",
+        "name": "Молитва святителю Тихону, Патриарху Московскому и Всея Руси"
+      },
+      {
+        "resid": "aleksiy_chelovek_Bojiy",
+        "addable": "true",
+        "name": "Молитва преподобному Алексию, человеку Божию"
+      },
+      {
+        "resid": "nebesnim_pechalnikam",
+        "addable": "true",
+        "name": "Mолитва Небесным печальникам Русской Земли"
+      },
+      {
+        "resid": "alexandru_nevskomu",
+        "addable": "true",
+        "name": "Молитва святому благоверному Великому Князю Александру Невскому"
+      },
+      {
+        "resid": "daniil_moskovskiy",
+        "addable": "true",
+        "name": "Молитва преподобному Даниилу Московскому"
+      },
+      {
+        "resid": "vyacheslav_cheshskiy",
+        "addable": "true",
+        "name": "Молитва святому благоверному князю Вячеславу Чешскому"
+      },
+      {
+        "resid": "olegu_bryanskomu",
+        "addable": "true",
+        "name": "Молитва святому князю Олегу Брянскому"
+      },
+      {
+        "resid": "ioannu_shanghaiskomu",
+        "addable": "true",
+        "name": "Молитва святителю Иоанну Шанхайскому"
+      },
+      {
+        "resid": "stephanu",
+        "addable": "true",
+        "name": "Молитва святому первомученику архидиакону Стефану"
+      }
+    ]
+  },
+  {
+    "name": "extras",
+    "item": [
+      {
+        "resid": "nachaloPsaltyri",
+        "addable": "false",
+        "name": "Перед началом чтения Псалтири"
+      },
+      {
+        "resid": "psaltyrPoOkonchanii",
+        "addable": "false",
+        "name": "По окончании чтения Псалтири"
+      },
+      {
+        "resid": "Pasha",
+        "addable": "false",
+        "name": "Часы святой Пасхи"
+      },
+      {
+        "resid": "readings_prayer_beginning",
+        "addable": "false",
+        "name": "Молитвы перед чтением писания"
+      }
+    ],
+    "name": "Pasha"
+  }
+]

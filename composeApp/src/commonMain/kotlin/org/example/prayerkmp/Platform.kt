@@ -1,0 +1,7 @@
+package org.example.prayerkmp
+
+interface Platform {
+    val name: String
+}
+
+expect fun getPlatform(): Platform

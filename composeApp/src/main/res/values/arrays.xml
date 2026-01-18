@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array  name="mainmenu">
+    <item>Молитвы на все случаи жизни</item>
+    <item >Каноны и Акафисты</item>
+    <item >Молитвы Святым</item>
+    <item >Евангельские Чтения на</item>
+    <item >Библия</item>
+    <item >Псалтирь</item>
+    <item >Литургия</item>
+    <item >Просьбы о молитве друг за друга</item>
+    <item >Мы в Вконтакте</item>
+    </string-array>
+</resources>
