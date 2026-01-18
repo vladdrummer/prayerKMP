@@ -21,8 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FeatureCard(
-    item: FeatureCardItem,
+fun MainMenuCard(
+    item: MainMenuCardItem,
     modifier: Modifier = Modifier
 ) {
     Card(

@@ -3,8 +3,7 @@ package org.example.prayerkmp.feature.mainmenu.view_model
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinproject.composeapp.generated.resources.Res
-import kotlinproject.composeapp.generated.resources.Res.book_generic
-import kotlinproject.composeapp.generated.resources.compose_multiplatform
+import kotlinproject.composeapp.generated.resources.book_generic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +25,7 @@ class MainViewModel(): ViewModel() {
                     MainMenuItem(
                         id = index,
                         title = tableOfContents.name,
-                        resId = Res.drawable.compose_multiplatform
+                        resId = Res.drawable.book_generic
                     )
                 )
             }
