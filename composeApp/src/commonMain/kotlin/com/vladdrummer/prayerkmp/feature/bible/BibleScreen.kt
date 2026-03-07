@@ -61,7 +61,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vladdrummer.prayerkmp.feature.bible.view_model.BibleMode
 import com.vladdrummer.prayerkmp.feature.bible.view_model.BibleViewState
-import com.vladdrummer.prayerkmp.feature.prayer.PlatformPrayerText
+import com.vladdrummer.prayerkmp.feature.prayer.PrayerTextComposable
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.ic_reading_nav_font_aa
 import kotlinx.coroutines.launch
@@ -283,7 +283,7 @@ fun BibleScreen(
                                     verticalArrangement = Arrangement.spacedBy(10.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    PlatformPrayerText(
+                                    PrayerTextComposable(
                                         html = chapterHtml,
                                         fontSizeSp = viewState.fontSizeSp,
                                         fontIndex = viewState.fontIndex,

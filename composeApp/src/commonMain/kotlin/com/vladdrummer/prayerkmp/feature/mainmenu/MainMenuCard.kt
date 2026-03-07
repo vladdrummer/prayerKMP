@@ -4,11 +4,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,7 +46,8 @@ fun MainMenuCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(14.dp),
+                .defaultMinSize(minHeight = 156.dp)
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -54,20 +55,19 @@ fun MainMenuCard(
                 painter = item.icon,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(40.dp)
                     .clip(RoundedCornerShape(10.dp)),
                 tint = MaterialTheme.colorScheme.primary
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
-            // Текст с переносом строк
             Text(
                 text = item.text,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleSmall.copy(lineHeight = 18.sp),
+                style = MaterialTheme.typography.titleSmall.copy(lineHeight = 17.sp),
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 3
+                softWrap = true
             )
         }
     }

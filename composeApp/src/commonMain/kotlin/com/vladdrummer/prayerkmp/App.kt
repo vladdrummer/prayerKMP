@@ -1,6 +1,5 @@
 package com.vladdrummer.prayerkmp
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -106,11 +105,21 @@ fun App() {
         }.getOrDefault(emptyList())
     }
     var stringsReady by remember { mutableStateOf(false) }
+    var initError by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) {
-        PrayerStringsRepository.init()
-        PrayerArraysRepository.init()
-        TableOfContentsRepository.init()
-        stringsReady = true
+        runCatching {
+            initError = null
+            runInitStep("PrayerStringsRepository") { PrayerStringsRepository.init() }
+            runInitStep("PrayerArraysRepository") { PrayerArraysRepository.init() }
+            runInitStep("TableOfContentsRepository") { TableOfContentsRepository.init() }
+            stringsReady = true
+        }.onFailure { error ->
+            stringsReady = false
+            val root = error.cause ?: error
+            val details = root.message ?: root.toString()
+            initError = "Ошибка инициализации: $details"
+            println("app-init: failed, root=$root")
+        }
     }
     val scope = rememberCoroutineScope()
     val bookColorScheme = lightColorScheme(
@@ -156,7 +165,7 @@ fun App() {
         colorScheme = if (isDarkTheme) bookDarkColorScheme else bookColorScheme
     ) {
         if (!stringsReady) {
-            SplashLoadingScreen()
+            SplashLoadingScreen(errorMessage = initError)
             return@MaterialTheme
         }
 
@@ -209,7 +218,7 @@ fun App() {
             if (!isPrayerListScreen || prayerListRoute == null) {
                 allPrayerSearchItems
             } else {
-                val index = when (prayerListRoute.type) {
+                val index = when (prayerListRoute.typeEnum()) {
                     com.vladdrummer.prayerkmp.feature.navigation.PrayerListScreen.PrayerListScreenType.AllPrayer -> 0
                     com.vladdrummer.prayerkmp.feature.navigation.PrayerListScreen.PrayerListScreenType.CannonAcathists -> 1
                     com.vladdrummer.prayerkmp.feature.navigation.PrayerListScreen.PrayerListScreenType.Saints -> 2
@@ -270,7 +279,7 @@ fun App() {
         LaunchedEffect(prayerListRoute?.title, prayerScreenRoute?.title, gospelReadingsRoute?.title, biblePrayerBridgeRoute?.title, bibleReaderRoute?.book, psalterBeforePrayerRoute?.title, psalterAfterPrayerRoute?.title, isPersonalDataScreen, isRuleEditScreen, isFavoritesScreen, isBibleScreen, isBiblePrayerBridgeScreen, isBibleReaderScreen, isPsalterScreen, isPsalterReaderScreen, isPsalterBeforePrayerScreen, isPsalterAfterPrayerScreen, isMainMenuScreen) {
             pendingTopBarTitle = null
         }
-        BackHandler(enabled = isSearchActive) {
+        PlatformBackHandler(enabled = isSearchActive) {
             isSearchActive = false
             searchQuery = ""
         }
@@ -539,8 +548,21 @@ fun App() {
     }
 }
 
+private suspend fun runInitStep(
+    stage: String,
+    action: suspend () -> Unit
+) {
+    println("app-init: start $stage")
+    runCatching { action() }
+        .onSuccess { println("app-init: done $stage") }
+        .onFailure {
+            println("app-init: failed $stage, error=$it")
+            throw IllegalStateException("Initialization stage failed: $stage", it)
+        }
+}
+
 @Composable
-private fun SplashLoadingScreen() {
+private fun SplashLoadingScreen(errorMessage: String?) {
     Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -573,6 +595,13 @@ private fun SplashLoadingScreen() {
                     strokeWidth = 2.5.dp,
                     modifier = Modifier.size(28.dp)
                 )
+                if (!errorMessage.isNullOrBlank()) {
+                    Text(
+                        text = errorMessage,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }

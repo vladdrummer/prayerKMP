@@ -11,14 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 private object AppDataStoreHolder {
-    @Volatile
-    private var instance: DataStore<Preferences>? = null
-
-    fun get(): DataStore<Preferences> {
-        return instance ?: synchronized(this) {
-            instance ?: createDataStore().also { instance = it }
-        }
-    }
+    val instance: DataStore<Preferences> by lazy { createDataStore() }
 }
 
 private class IosAppStorage(
@@ -46,4 +39,4 @@ private class IosAppStorage(
 }
 
 @Composable
-actual fun rememberAppStorage(): AppStorage = remember { IosAppStorage(AppDataStoreHolder.get()) }
+actual fun rememberAppStorage(): AppStorage = remember { IosAppStorage(AppDataStoreHolder.instance) }

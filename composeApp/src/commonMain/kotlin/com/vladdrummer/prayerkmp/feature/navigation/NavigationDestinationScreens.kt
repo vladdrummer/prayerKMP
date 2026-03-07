@@ -72,11 +72,22 @@ data class PrayerScreen(
 
 @Serializable
 data class PrayerListScreen(
-    val type: PrayerListScreenType,
+    val type: String,
     val title: String
 ) {
     @Serializable
     enum class PrayerListScreenType {
         AllPrayer, CannonAcathists, Saints
+    }
+
+    fun typeEnum(): PrayerListScreenType {
+        return PrayerListScreenType.entries.firstOrNull { it.name == type }
+            ?: PrayerListScreenType.Saints
+    }
+
+    companion object {
+        fun from(type: PrayerListScreenType, title: String): PrayerListScreen {
+            return PrayerListScreen(type = type.name, title = title)
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.vladdrummer.prayerkmp.feature.prayer
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -62,6 +61,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.vladdrummer.prayerkmp.PlatformBackHandler
 import com.vladdrummer.prayerkmp.feature.prayer.view_model.PrayerViewState
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.ic_reading_nav_add_to_morning_rule
@@ -112,7 +112,7 @@ fun PrayerScreen(
     )
     val controlIconsTint = MaterialTheme.colorScheme.onPrimaryContainer
     var scrollRestored by remember(viewState.resId) { mutableStateOf(false) }
-    BackHandler(onBack = onNavigateBackWithoutSave)
+    PlatformBackHandler(onBack = onNavigateBackWithoutSave)
     val stopAutoScrollOnUserScroll = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
@@ -177,7 +177,7 @@ fun PrayerScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            PlatformPrayerText(
+            PrayerTextComposable(
                 html = viewState.text,
                 fontSizeSp = viewState.fontSizeSp,
                 fontIndex = viewState.fontIndex,

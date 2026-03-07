@@ -33,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.vladdrummer.prayerkmp.feature.prayer.PlatformPrayerText
+import com.vladdrummer.prayerkmp.feature.prayer.PrayerTextComposable
 import com.vladdrummer.prayerkmp.feature.ruleedit.view_model.RuleEditViewState
 import com.vladdrummer.prayerkmp.feature.ruleedit.view_model.RuleType
 
@@ -156,7 +156,7 @@ fun RuleEditScreen(
                     if (viewState.isPreviewLoading) {
                         Text("Загрузка...")
                     } else {
-                        PlatformPrayerText(
+                        PrayerTextComposable(
                             html = viewState.previewHtml.orEmpty(),
                             fontSizeSp = 18,
                             fontIndex = 0,

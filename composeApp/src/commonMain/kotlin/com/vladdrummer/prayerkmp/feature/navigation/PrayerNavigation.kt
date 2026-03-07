@@ -77,7 +77,7 @@ fun PrayerNavigation (
                             1 -> PrayerListScreenType.CannonAcathists
                             else -> PrayerListScreenType.Saints
                         }
-                        navController.navigate(PrayerListScreen(type = type, title = item.title))
+                        navController.navigate(PrayerListScreen.from(type = type, title = item.title))
                     }
                 }
             )
@@ -343,7 +343,7 @@ fun PrayerNavigation (
         }
         composable<PrayerListScreen> { backStackEntry ->
             val args = backStackEntry.toRoute<PrayerListScreen>()
-            val viewModel: ContentListViewModel = viewModel { ContentListViewModel(args.type) }
+            val viewModel: ContentListViewModel = viewModel { ContentListViewModel(args.typeEnum()) }
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             ContentListScreen(
                 viewState = viewState,

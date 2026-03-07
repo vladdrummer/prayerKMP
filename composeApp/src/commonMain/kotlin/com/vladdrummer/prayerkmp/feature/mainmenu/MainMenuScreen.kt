@@ -2,7 +2,6 @@ package com.vladdrummer.prayerkmp.feature.mainmenu
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -29,9 +28,9 @@ fun MainMenuScreen(
     var selectedItemId by remember { mutableStateOf<Int?>(null) }
     var isNavigationInProgress by remember { mutableStateOf(false) }
     BoxWithConstraints(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
-        val columns = calculateColumns(maxWidth)
+        val minCardWidth = calculateMinCardWidth(maxWidth, viewState.items)
         LazyVerticalGrid(
-            columns = GridCells.Fixed(columns),
+            columns = GridCells.Adaptive(minSize = minCardWidth),
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -54,7 +53,6 @@ fun MainMenuScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(132f / 156f)
                         .padding(horizontal = 2.dp)
                 )
             }
@@ -62,10 +60,24 @@ fun MainMenuScreen(
     }
 }
 
-private fun calculateColumns(width: Dp): Int {
-    return when {
-        width < 360.dp -> 2
-        width < 600.dp -> 3
-        else -> 4
+private fun calculateMinCardWidth(
+    width: Dp,
+    items: List<MainMenuItem>,
+): Dp {
+    val longestWordLength = items
+        .asSequence()
+        .flatMap { it.title.split(Regex("""[\s\-]+""")).asSequence() }
+        .map { it.length }
+        .maxOrNull() ?: 0
+
+    var minWidth = when {
+        width < 420.dp -> 170.dp
+        width < 720.dp -> 180.dp
+        else -> 190.dp
     }
+    if (longestWordLength >= 14) minWidth += 14.dp
+    if (longestWordLength >= 18) minWidth += 18.dp
+
+    val upperBound = (width - 8.dp).coerceAtLeast(150.dp)
+    return minWidth.coerceAtMost(upperBound)
 }

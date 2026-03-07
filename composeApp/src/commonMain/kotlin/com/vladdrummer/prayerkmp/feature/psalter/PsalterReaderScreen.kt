@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.vladdrummer.prayerkmp.feature.prayer.PlatformPrayerText
+import com.vladdrummer.prayerkmp.feature.prayer.PrayerTextComposable
 import com.vladdrummer.prayerkmp.feature.psalter.view_model.PsalterReaderViewState
 import kotlinx.coroutines.launch
 
@@ -115,7 +115,7 @@ fun PsalterReaderScreen(
                         .fillMaxWidth()
                         .padding(top = 12.dp)
                 )
-                PlatformPrayerText(
+                PrayerTextComposable(
                     html = pageData.html,
                     fontSizeSp = 20,
                     fontIndex = 1,

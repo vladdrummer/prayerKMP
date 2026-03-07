@@ -30,7 +30,7 @@ class PersonalDataViewModel(
 
     private fun loadFromStorage() {
         viewModelScope.launch {
-            val loaded = withContext(Dispatchers.IO) {
+            val loaded = withContext(Dispatchers.Default) {
                 coroutineScope {
                     val nameImenit = async {
                         storage.stringFlow(AppStorageKeys.NameImenit, DEFAULT_NAME_IMENIT).first()

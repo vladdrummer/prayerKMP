@@ -49,8 +49,15 @@ object ReadingsRepository {
                     saveReadingsToCache(storage, datePadded, networkReadings)
                     networkReadings
                 } else {
-                    saveNotFoundToCache(storage, datePadded)
-                    null
+                    val localReadings = loadReadingsFromLocalXml(dateCompact, datePadded)
+                    if (!localReadings.isNullOrEmpty()) {
+                        readingsLog("cache not-found, but local xml has refs=${localReadings.size}, replacing cache")
+                        saveReadingsToCache(storage, datePadded, localReadings)
+                        localReadings
+                    } else {
+                        saveNotFoundToCache(storage, datePadded)
+                        null
+                    }
                 }
             }
             CacheState.Miss -> {
@@ -158,9 +165,31 @@ object ReadingsRepository {
         if (cached != null) {
             readingsLog("local xml cache hit, dates=${cached.size}")
         }
-        val refs = byDate[dateCompact] ?: byDate[datePadded]
+        val refs = byDate[dateCompact]
+            ?: byDate[datePadded]
+            ?: findByDayMonth(byDate, dateCompact)
+            ?: findByDayMonth(byDate, datePadded)
         readingsLog("local xml lookup result count=${refs?.size ?: 0} for dateCompact=$dateCompact, datePadded=$datePadded")
         return refs
+    }
+
+    private fun findByDayMonth(
+        byDate: Map<String, List<ReadingRef>>,
+        dateValue: String,
+    ): List<ReadingRef>? {
+        val (targetDay, targetMonth) = parseDayMonth(dateValue) ?: return null
+        return byDate.entries.firstOrNull { entry ->
+            val (day, month) = parseDayMonth(entry.key) ?: return@firstOrNull false
+            day == targetDay && month == targetMonth
+        }?.value
+    }
+
+    private fun parseDayMonth(value: String): Pair<Int, Int>? {
+        val parts = value.split('.')
+        if (parts.size < 2) return null
+        val day = parts[0].toIntOrNull() ?: return null
+        val month = parts[1].toIntOrNull() ?: return null
+        return day to month
     }
 
     private suspend fun renderReadingLines(ref: ReadingRef): String {
@@ -196,9 +225,9 @@ object ReadingsRepository {
                 if (verse in ref.from..ref.to) {
                     matchedLines += 1
                     val verseText = decodeXmlEntities(match.groupValues[2]).trim().replace(Regex("""\s+"""), " ")
-                    append("<i>")
+                    append("<sup><font color=\"#aa2c2c\">")
                     append(verse)
-                    append("</i> ")
+                    append("</font></sup> ")
                     append(verseText)
                     append("<br />")
                 }

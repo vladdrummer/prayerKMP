@@ -13,11 +13,8 @@ import com.vladdrummer.prayerkmp.feature.strings.getString
 import com.vladdrummer.prayerkmp.feature.yearperiod.ChurchYearPeriod
 import com.vladdrummer.prayerkmp.feature.yearperiod.ChurchYearPeriodResolver
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
@@ -386,7 +383,7 @@ class PrayerTextBuilder(
     }
 
     private fun currentDayPart(): String {
-        val hour = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).hour
+        val hour = currentHourOfDay()
         return if (hour in 5..16) "день сей " else "ночь сию "
     }
 

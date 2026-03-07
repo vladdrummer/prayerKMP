@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vladdrummer.prayerkmp.feature.readings.view_model.ReadingsViewState
-import com.vladdrummer.prayerkmp.feature.prayer.PlatformPrayerText
+import com.vladdrummer.prayerkmp.feature.prayer.PrayerTextComposable
 
 @Composable
 fun ReadingsScreen(
@@ -78,7 +78,7 @@ fun ReadingsScreen(
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        PlatformPrayerText(
+        PrayerTextComposable(
             html = viewState.htmlText,
             fontSizeSp = 20,
             fontIndex = 1,
