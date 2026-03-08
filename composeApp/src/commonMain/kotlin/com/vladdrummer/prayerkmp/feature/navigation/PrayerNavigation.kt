@@ -170,6 +170,10 @@ fun PrayerNavigation (
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             PrayerReadingScreen(
                 viewState = viewState,
+                onIncreaseFont = viewModel::increaseFontSize,
+                onDecreaseFont = viewModel::decreaseFontSize,
+                onSwitchFont = viewModel::switchFont,
+                onResetFontDefaults = viewModel::resetFontDefaults,
                 onNavigateBackWithoutSave = navController::navigateUp,
                 bottomActionText = "Перейти дальше к Библии",
                 onBottomActionClick = {
@@ -227,6 +231,10 @@ fun PrayerNavigation (
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             PrayerReadingScreen(
                 viewState = viewState,
+                onIncreaseFont = viewModel::increaseFontSize,
+                onDecreaseFont = viewModel::decreaseFontSize,
+                onSwitchFont = viewModel::switchFont,
+                onResetFontDefaults = viewModel::resetFontDefaults,
                 onNavigateBackWithoutSave = navController::navigateUp,
                 bottomActionText = "К чтению Псалтири",
                 onBottomActionClick = {
@@ -298,6 +306,10 @@ fun PrayerNavigation (
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             PrayerReadingScreen(
                 viewState = viewState,
+                onIncreaseFont = viewModel::increaseFontSize,
+                onDecreaseFont = viewModel::decreaseFontSize,
+                onSwitchFont = viewModel::switchFont,
+                onResetFontDefaults = viewModel::resetFontDefaults,
                 onNavigateBackWithoutSave = navController::navigateUp,
             )
         }
