@@ -1,46 +1,27 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="800dp"
-    android:height="800dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-
+    android:width="50dp"
+    android:height="50dp"
+    android:viewportWidth="50"
+    android:viewportHeight="50">
     <path
-        android:strokeWidth="1"
-        android:pathData="M20,12V17C20,18.886 20,19.828 19.414,20.414C18.828,21 17.886,21 16,21H6.5C5.119,21 4,19.881 4,18.5V18.5C4,17.119 5.119,16 6.5,16H16C17.886,16 18.828,16 19.414,15.414C20,14.828 20,13.886 20,12V7C20,5.114 20,4.172 19.414,3.586C18.828,3 17.886,3 16,3H8C6.114,3 5.172,3 4.586,3.586C4,4.172 4,5.114 4,7V18.5"
-        android:fillColor="#00000000"
-        android:strokeColor="#222222"/>
-
+        android:pathData="M27.16,28.75c-0.41,0 -0.75,-0.34 -0.75,-0.75v-15.82c0,-0.41 0.34,-0.75 0.75,-0.75s0.75,0.34 0.75,0.75v15.82c0,0.41 -0.34,0.75 -0.75,0.75Z"
+        android:fillColor="#353741"/>
     <path
-        android:strokeWidth="1"
-        android:pathData="M9,8L15,8"
-        android:fillColor="#00000000"
-        android:strokeColor="#222222"
-        android:strokeLineCap="round"/>
-
-    <!-- Orthodox-style cross without the long middle bar -->
-    <!-- vertical stem -->
+        android:pathData="M32.83,18.83h-11.33c-0.41,0 -0.75,-0.34 -0.75,-0.75s0.34,-0.75 0.75,-0.75h11.33c0.41,0 0.75,0.34 0.75,0.75s-0.34,0.75 -0.75,0.75Z"
+        android:fillColor="#353741"/>
     <path
-        android:strokeWidth="1"
-        android:pathData="M12,6.0V14.2"
-        android:fillColor="#00000000"
-        android:strokeColor="#222222"
-        android:strokeLineCap="round"/>
-
-    <!-- top short bar -->
+        android:pathData="M29.5,26.45c-0.1,0 -0.2,-0.02 -0.29,-0.06l-4.67,-2c-0.38,-0.16 -0.56,-0.6 -0.39,-0.98 0.16,-0.38 0.6,-0.56 0.98,-0.39l4.67,2c0.38,0.16 0.56,0.6 0.39,0.98 -0.12,0.29 -0.4,0.46 -0.69,0.46Z"
+        android:fillColor="#353741"/>
     <path
-        android:strokeWidth="1"
-        android:pathData="M11.3,7.4H12.7"
-        android:fillColor="#00000000"
-        android:strokeColor="#222222"
-        android:strokeLineCap="round"/>
-
-    <!-- bottom slanted bar (short) -->
+        android:pathData="M29.52,14.87h-4.72c-0.41,0 -0.75,-0.34 -0.75,-0.75s0.34,-0.75 0.75,-0.75h4.72c0.41,0 0.75,0.34 0.75,0.75s-0.34,0.75 -0.75,0.75Z"
+        android:fillColor="#353741"/>
     <path
-        android:strokeWidth="1"
-        android:pathData="M10.9,12.9L13.1,13.3"
-        android:fillColor="#00000000"
-        android:strokeColor="#222222"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"/>
-
+        android:pathData="M41,42.75H15.17c-0.41,0 -0.75,-0.34 -0.75,-0.75s0.34,-0.75 0.75,-0.75h25.08V5.5c0,-0.41 -0.34,-0.75 -0.75,-0.75H12.5c-1.52,0 -2.75,1.23 -2.75,2.75v34.5c0,0.41 -0.34,0.75 -0.75,0.75s-0.75,-0.34 -0.75,-0.75V7.5c0,-2.34 1.91,-4.25 4.25,-4.25h27c1.24,0 2.25,1.01 2.25,2.25v36.5c0,0.41 -0.34,0.75 -0.75,0.75Z"
+        android:fillColor="#791c2c"/>
+    <path
+        android:pathData="M13.5,38.75c-0.41,0 -0.75,-0.34 -0.75,-0.75V5c0,-0.41 0.34,-0.75 0.75,-0.75s0.75,0.34 0.75,0.75v33c0,0.41 -0.34,0.75 -0.75,0.75Z"
+        android:fillColor="#791c2c"/>
+    <path
+        android:pathData="M41,46.75H13c-2.62,0 -4.75,-2.13 -4.75,-4.75s2.13,-4.75 4.75,-4.75h28c0.41,0 0.75,0.34 0.75,0.75v8c0,0.41 -0.34,0.75 -0.75,0.75ZM13,38.75c-1.79,0 -3.25,1.46 -3.25,3.25s1.46,3.25 3.25,3.25h27.25v-6.5H13Z"
+        android:fillColor="#791c2c"/>
 </vector>

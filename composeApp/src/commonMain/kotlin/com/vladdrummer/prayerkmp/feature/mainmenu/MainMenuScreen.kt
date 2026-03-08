@@ -7,14 +7,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.vladdrummer.prayerkmp.feature.mainmenu.view_model.MainViewState
 import com.vladdrummer.prayerkmp.feature.mainmenu.view_model.MainMenuItem
 import org.jetbrains.compose.resources.painterResource
@@ -60,24 +66,40 @@ fun MainMenuScreen(
     }
 }
 
+private val WordDelimiterRegex = Regex("""[\s\-]+""")
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
 private fun calculateMinCardWidth(
     width: Dp,
     items: List<MainMenuItem>,
 ): Dp {
-    val longestWordLength = items
+    val textMeasurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val textStyle = MaterialTheme.typography.titleSmall.copy(lineHeight = 17.sp)
+
+    val longestWord = items
         .asSequence()
-        .flatMap { it.title.split(Regex("""[\s\-]+""")).asSequence() }
-        .map { it.length }
-        .maxOrNull() ?: 0
+        .flatMap { it.title.split(WordDelimiterRegex).asSequence() }
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .maxByOrNull { it.length }
+        ?: ""
 
-    var minWidth = when {
-        width < 420.dp -> 170.dp
-        width < 720.dp -> 180.dp
-        else -> 190.dp
+    val longestWordWidthDp = with(density) {
+        textMeasurer
+            .measure(
+                text = AnnotatedString(longestWord),
+                style = textStyle,
+                softWrap = false
+            )
+            .size
+            .width
+            .toDp()
     }
-    if (longestWordLength >= 14) minWidth += 14.dp
-    if (longestWordLength >= 18) minWidth += 18.dp
 
+    val horizontalInsets = (12.dp * 2) + 4.dp
+    val minWidth = (longestWordWidthDp + horizontalInsets).coerceAtLeast(136.dp)
     val upperBound = (width - 8.dp).coerceAtLeast(150.dp)
     return minWidth.coerceAtMost(upperBound)
 }

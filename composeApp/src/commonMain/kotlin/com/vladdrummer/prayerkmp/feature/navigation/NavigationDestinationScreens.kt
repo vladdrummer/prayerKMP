@@ -21,6 +21,12 @@ object Bible
 object Psalter
 
 @Serializable
+object MessageBoard
+
+@Serializable
+object Support
+
+@Serializable
 data class BiblePrayerBridge(
     val book: String,
     val chapter: Int,

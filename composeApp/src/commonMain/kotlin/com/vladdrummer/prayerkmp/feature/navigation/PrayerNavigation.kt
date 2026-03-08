@@ -20,6 +20,8 @@ import com.vladdrummer.prayerkmp.feature.favorites.FavoritesScreen
 import com.vladdrummer.prayerkmp.feature.favorites.view_model.FavoritesViewModel
 import com.vladdrummer.prayerkmp.feature.mainmenu.MainMenuScreen
 import com.vladdrummer.prayerkmp.feature.mainmenu.view_model.MainViewModel
+import com.vladdrummer.prayerkmp.feature.messageboard.MessageBoardScreen
+import com.vladdrummer.prayerkmp.feature.messageboard.view_model.MessageBoardViewModel
 import com.vladdrummer.prayerkmp.feature.personaldata.PersonalDataScreen
 import com.vladdrummer.prayerkmp.feature.personaldata.view_model.PersonalDataViewModel
 import com.vladdrummer.prayerkmp.feature.prayer.PrayerScreen as PrayerReadingScreen
@@ -34,6 +36,8 @@ import com.vladdrummer.prayerkmp.feature.readings.ReadingsScreen
 import com.vladdrummer.prayerkmp.feature.readings.view_model.ReadingsViewModel
 import com.vladdrummer.prayerkmp.feature.ruleedit.RuleEditScreen
 import com.vladdrummer.prayerkmp.feature.ruleedit.view_model.RuleEditViewModel
+import com.vladdrummer.prayerkmp.feature.support.SupportScreen
+import com.vladdrummer.prayerkmp.feature.support.view_model.SupportViewModel
 import com.vladdrummer.prayerkmp.feature.navigation.PrayerListScreen.PrayerListScreenType
 import com.vladdrummer.prayerkmp.feature.storage.AppStorageKeys
 import com.vladdrummer.prayerkmp.feature.storage.rememberAppStorage
@@ -69,6 +73,10 @@ fun PrayerNavigation (
                         navController.navigate(Bible)
                     } else if (item.id == MainViewModel.PSALTER_ITEM_ID) {
                         navController.navigate(Psalter)
+                    } else if (item.id == MainViewModel.MESSAGE_BOARD_ITEM_ID) {
+                        navController.navigate(MessageBoard)
+                    } else if (item.id == MainViewModel.SUPPORT_ITEM_ID) {
+                        navController.navigate(Support)
                     } else if (item.id == MainViewModel.READINGS_ITEM_ID) {
                         navController.navigate(GospelReadings(title = item.title))
                     } else {
@@ -322,6 +330,16 @@ fun PrayerNavigation (
                 onOpenAdditionalPrayerPreview = viewModel::openAdditionalPrayerPreview,
                 onClosePreview = viewModel::closePreview,
             )
+        }
+        composable<MessageBoard> {
+            val viewModel: MessageBoardViewModel = viewModel { MessageBoardViewModel() }
+            val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+            MessageBoardScreen(viewState = viewState)
+        }
+        composable<Support> {
+            val viewModel: SupportViewModel = viewModel { SupportViewModel() }
+            val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+            SupportScreen(viewState = viewState)
         }
         composable<Favorites> {
             val storage = rememberAppStorage()

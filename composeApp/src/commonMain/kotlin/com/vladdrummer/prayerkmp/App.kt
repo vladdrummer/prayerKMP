@@ -72,7 +72,6 @@ import com.vladdrummer.prayerkmp.feature.navigation.RuleEdit
 import com.vladdrummer.prayerkmp.feature.prayer.PrayerScrollSession
 import com.vladdrummer.prayerkmp.feature.storage.AppStorageKeys
 import com.vladdrummer.prayerkmp.feature.storage.rememberAppStorage
-import com.vladdrummer.prayerkmp.feature.strings.PrayerStringsRepository
 import com.vladdrummer.prayerkmp.feature.tableofcontents.TableOfContentsRepository
 import androidx.compose.material3.TextField
 import kotlinx.coroutines.flow.first
@@ -109,7 +108,6 @@ fun App() {
     LaunchedEffect(Unit) {
         runCatching {
             initError = null
-            runInitStep("PrayerStringsRepository") { PrayerStringsRepository.init() }
             runInitStep("PrayerArraysRepository") { PrayerArraysRepository.init() }
             runInitStep("TableOfContentsRepository") { TableOfContentsRepository.init() }
             stringsReady = true
@@ -177,6 +175,8 @@ fun App() {
         val isPrayerScreen = destinationRoute.contains("PrayerScreen")
         val isPersonalDataScreen = destinationRoute.contains("PersonalData")
         val isRuleEditScreen = destinationRoute.contains("RuleEdit")
+        val isMessageBoardScreen = destinationRoute.contains("MessageBoard")
+        val isSupportScreen = destinationRoute.contains("Support")
         val isFavoritesScreen = destinationRoute.contains("Favorites")
         val isGospelReadingsScreen = destinationRoute.contains("GospelReadings")
         val isBiblePrayerBridgeScreen = destinationRoute.contains("BiblePrayerBridge")
@@ -196,7 +196,7 @@ fun App() {
         val psalterBeforePrayerRoute = if (isPsalterBeforePrayerScreen) runCatching { navBackStackEntry?.toRoute<PsalterBeforePrayer>() }.getOrNull() else null
         val psalterAfterPrayerRoute = if (isPsalterAfterPrayerScreen) runCatching { navBackStackEntry?.toRoute<PsalterAfterPrayer>() }.getOrNull() else null
         val isMainMenuScreen =
-            isMainMenuByRoute || (!isPrayerListScreen && !isPrayerScreen && !isPersonalDataScreen && !isRuleEditScreen && !isFavoritesScreen && !isGospelReadingsScreen && !isBibleScreen && !isBiblePrayerBridgeScreen && !isBibleReaderScreen && !isPsalterScreen && !isPsalterReaderScreen && !isPsalterBeforePrayerScreen && !isPsalterAfterPrayerScreen)
+            isMainMenuByRoute || (!isPrayerListScreen && !isPrayerScreen && !isPersonalDataScreen && !isRuleEditScreen && !isMessageBoardScreen && !isSupportScreen && !isFavoritesScreen && !isGospelReadingsScreen && !isBibleScreen && !isBiblePrayerBridgeScreen && !isBibleReaderScreen && !isPsalterScreen && !isPsalterReaderScreen && !isPsalterBeforePrayerScreen && !isPsalterAfterPrayerScreen)
         val isSearchAvailable = isMainMenuScreen || isPrayerListScreen
         var isSearchActive by remember { mutableStateOf(false) }
         var searchQuery by remember { mutableStateOf("") }
@@ -253,6 +253,8 @@ fun App() {
                     ?: psalterBeforePrayerRoute?.title
                     ?: psalterAfterPrayerRoute?.title
                     ?: if (isPersonalDataScreen) "Персональные данные" else null
+                    ?: if (isMessageBoardScreen) "Молитвы друг за друга" else null
+                    ?: if (isSupportScreen) "Поддержать проект" else null
                     ?: biblePrayerBridgeRoute?.title
                     ?: bibleLastBookRaw.ifBlank { null }
                     ?: bibleReaderRoute?.book
@@ -276,7 +278,7 @@ fun App() {
         LaunchedEffect(isSearchActive) {
             if (isSearchActive) searchFocusRequester.requestFocus()
         }
-        LaunchedEffect(prayerListRoute?.title, prayerScreenRoute?.title, gospelReadingsRoute?.title, biblePrayerBridgeRoute?.title, bibleReaderRoute?.book, psalterBeforePrayerRoute?.title, psalterAfterPrayerRoute?.title, isPersonalDataScreen, isRuleEditScreen, isFavoritesScreen, isBibleScreen, isBiblePrayerBridgeScreen, isBibleReaderScreen, isPsalterScreen, isPsalterReaderScreen, isPsalterBeforePrayerScreen, isPsalterAfterPrayerScreen, isMainMenuScreen) {
+        LaunchedEffect(prayerListRoute?.title, prayerScreenRoute?.title, gospelReadingsRoute?.title, biblePrayerBridgeRoute?.title, bibleReaderRoute?.book, psalterBeforePrayerRoute?.title, psalterAfterPrayerRoute?.title, isPersonalDataScreen, isRuleEditScreen, isMessageBoardScreen, isSupportScreen, isFavoritesScreen, isBibleScreen, isBiblePrayerBridgeScreen, isBibleReaderScreen, isPsalterScreen, isPsalterReaderScreen, isPsalterBeforePrayerScreen, isPsalterAfterPrayerScreen, isMainMenuScreen) {
             pendingTopBarTitle = null
         }
         PlatformBackHandler(enabled = isSearchActive) {
