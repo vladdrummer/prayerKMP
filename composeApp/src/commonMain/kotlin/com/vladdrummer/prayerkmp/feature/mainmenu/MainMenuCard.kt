@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +31,8 @@ fun MainMenuCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val iconTint = if (isDarkTheme) Color.White else Color.Unspecified
     Card(
         onClick = onClick,
         modifier = modifier
@@ -58,7 +61,7 @@ fun MainMenuCard(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(10.dp)),
-                tint = Color.Unspecified
+                tint = iconTint
             )
 
             Spacer(modifier = Modifier.height(6.dp))

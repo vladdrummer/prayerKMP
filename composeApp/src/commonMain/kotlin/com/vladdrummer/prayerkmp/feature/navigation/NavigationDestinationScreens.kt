@@ -27,6 +27,9 @@ object MessageBoard
 object Support
 
 @Serializable
+object Cloud
+
+@Serializable
 data class BiblePrayerBridge(
     val book: String,
     val chapter: Int,

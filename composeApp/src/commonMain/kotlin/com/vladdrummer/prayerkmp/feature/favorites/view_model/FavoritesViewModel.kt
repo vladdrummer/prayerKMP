@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
@@ -24,7 +26,31 @@ class FavoritesViewModel(
     init {
         viewModelScope.launch {
             runCatching { TableOfContentsRepository.init() }
-            loadFavorites()
+            storage.stringFlow(AppStorageKeys.FavoritePrayers, "")
+                .distinctUntilChanged()
+                .collectLatest { raw ->
+                    viewStateFlow.value = viewStateFlow.value.copy(isLoading = true)
+                    val ids = parseFavoriteIds(raw)
+                    val byId = TableOfContentsRepository.state.value
+                        .asSequence()
+                        .flatMap { it.item.asSequence() }
+                        .filter { !it.resid.isNullOrBlank() }
+                        .associateBy { it.resid.orEmpty() }
+
+                    val items = ids.map { id ->
+                        val p = byId[id]
+                        FavoritePrayerUi(
+                            resId = id,
+                            title = p?.name ?: id,
+                            addable = p?.addable ?: false,
+                        )
+                    }
+
+                    viewStateFlow.value = FavoritesViewState(
+                        isLoading = false,
+                        items = items,
+                    )
+                }
         }
     }
 
@@ -33,37 +59,31 @@ class FavoritesViewModel(
             val current = loadFavoriteIds().toMutableList()
             current.removeAll { it == resId }
             saveFavoriteIds(current)
-            loadFavorites()
         }
     }
 
-    private suspend fun loadFavorites() {
-        viewStateFlow.value = viewStateFlow.value.copy(isLoading = true)
-        val ids = loadFavoriteIds()
+    fun moveFavorite(fromIndex: Int, toIndex: Int) {
+        val currentItems = viewStateFlow.value.items
+        if (fromIndex == toIndex) return
+        if (fromIndex !in currentItems.indices || toIndex !in currentItems.indices) return
 
-        val byId = TableOfContentsRepository.state.value
-            .asSequence()
-            .flatMap { it.item.asSequence() }
-            .filter { !it.resid.isNullOrBlank() }
-            .associateBy { it.resid.orEmpty() }
-
-        val items = ids.map { id ->
-            val p = byId[id]
-            FavoritePrayerUi(
-                resId = id,
-                title = p?.name ?: id,
-                addable = p?.addable ?: false,
-            )
+        val updated = currentItems.toMutableList().apply {
+            val moved = removeAt(fromIndex)
+            add(toIndex, moved)
         }
+        viewStateFlow.value = viewStateFlow.value.copy(items = updated)
 
-        viewStateFlow.value = FavoritesViewState(
-            isLoading = false,
-            items = items,
-        )
+        viewModelScope.launch {
+            saveFavoriteIds(updated.map { it.resId })
+        }
     }
 
     private suspend fun loadFavoriteIds(): List<String> {
         val raw = storage.stringFlow(AppStorageKeys.FavoritePrayers, "").first()
+        return parseFavoriteIds(raw)
+    }
+
+    private fun parseFavoriteIds(raw: String): List<String> {
         if (raw.isBlank()) return emptyList()
         return runCatching {
             json.decodeFromString(ListSerializer(String.serializer()), raw)

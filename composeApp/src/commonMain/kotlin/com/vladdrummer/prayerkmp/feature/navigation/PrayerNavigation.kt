@@ -3,7 +3,10 @@ package com.vladdrummer.prayerkmp.feature.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -11,9 +14,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.vladdrummer.prayerkmp.getPlatform
+import com.vladdrummer.prayerkmp.feature.auth.GoogleEmailAuthBottomSheet
 import com.vladdrummer.prayerkmp.feature.bible.BibleScreen
 import com.vladdrummer.prayerkmp.feature.bible.view_model.BibleReaderTarget
 import com.vladdrummer.prayerkmp.feature.bible.view_model.BibleViewModel
+import com.vladdrummer.prayerkmp.feature.cloud.CloudScreen
+import com.vladdrummer.prayerkmp.feature.cloud.view_model.CloudViewModel
 import com.vladdrummer.prayerkmp.feature.contentlist.ContentListScreen
 import com.vladdrummer.prayerkmp.feature.contentlist.view_model.ContentListViewModel
 import com.vladdrummer.prayerkmp.feature.favorites.FavoritesScreen
@@ -59,6 +66,28 @@ fun PrayerNavigation (
         navController = navController
     ) {
         composable<MainMenu> {
+            val storage = rememberAppStorage()
+            val scope = rememberCoroutineScope()
+            val authEmail by storage.stringFlow(AppStorageKeys.GoogleAccountEmail, "").collectAsStateWithLifecycle("")
+            var pendingProtectedDestination by remember { mutableStateOf<ProtectedDestination?>(null) }
+            val platformName = remember { getPlatform().name.lowercase() }
+            val isAndroidPlatform = platformName.startsWith("android")
+            val isIosPlatform = platformName.startsWith("ios")
+            fun requiresAuth(destination: ProtectedDestination): Boolean {
+                return when {
+                    isAndroidPlatform -> destination in setOf(
+                        ProtectedDestination.PersonalData,
+                        ProtectedDestination.RuleEdit,
+                        ProtectedDestination.MessageBoard,
+                        ProtectedDestination.Cloud,
+                    )
+                    isIosPlatform -> destination in setOf(
+                        ProtectedDestination.MessageBoard,
+                        ProtectedDestination.Cloud,
+                    )
+                    else -> false
+                }
+            }
             val viewModel : MainViewModel = viewModel { MainViewModel() }
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             MainMenuScreen(
@@ -66,15 +95,29 @@ fun PrayerNavigation (
                 viewState = viewState,
                 onItemClick = { item ->
                     if (item.id == MainViewModel.PERSONAL_DATA_ITEM_ID) {
-                        navController.navigate(PersonalData)
+                        if (requiresAuth(ProtectedDestination.PersonalData) && authEmail.isBlank()) {
+                            pendingProtectedDestination = ProtectedDestination.PersonalData
+                        }
+                        else navController.navigate(PersonalData)
                     } else if (item.id == MainViewModel.RULE_EDIT_ITEM_ID) {
-                        navController.navigate(RuleEdit)
+                        if (requiresAuth(ProtectedDestination.RuleEdit) && authEmail.isBlank()) {
+                            pendingProtectedDestination = ProtectedDestination.RuleEdit
+                        }
+                        else navController.navigate(RuleEdit)
                     } else if (item.id == MainViewModel.BIBLE_ITEM_ID) {
                         navController.navigate(Bible)
                     } else if (item.id == MainViewModel.PSALTER_ITEM_ID) {
                         navController.navigate(Psalter)
                     } else if (item.id == MainViewModel.MESSAGE_BOARD_ITEM_ID) {
-                        navController.navigate(MessageBoard)
+                        if (requiresAuth(ProtectedDestination.MessageBoard) && authEmail.isBlank()) {
+                            pendingProtectedDestination = ProtectedDestination.MessageBoard
+                        }
+                        else navController.navigate(MessageBoard)
+                    } else if (item.id == MainViewModel.CLOUD_ITEM_ID) {
+                        if (requiresAuth(ProtectedDestination.Cloud) && authEmail.isBlank()) {
+                            pendingProtectedDestination = ProtectedDestination.Cloud
+                        }
+                        else navController.navigate(Cloud)
                     } else if (item.id == MainViewModel.SUPPORT_ITEM_ID) {
                         navController.navigate(Support)
                     } else if (item.id == MainViewModel.READINGS_ITEM_ID) {
@@ -89,6 +132,24 @@ fun PrayerNavigation (
                     }
                 }
             )
+            if (pendingProtectedDestination != null) {
+                GoogleEmailAuthBottomSheet(
+                    onDismiss = { pendingProtectedDestination = null },
+                    onAuthorized = { email ->
+                        scope.launch {
+                            storage.setString(AppStorageKeys.GoogleAccountEmail, email)
+                            when (pendingProtectedDestination) {
+                                ProtectedDestination.PersonalData -> navController.navigate(PersonalData)
+                                ProtectedDestination.RuleEdit -> navController.navigate(RuleEdit)
+                                ProtectedDestination.MessageBoard -> navController.navigate(MessageBoard)
+                                ProtectedDestination.Cloud -> navController.navigate(Cloud)
+                                null -> Unit
+                            }
+                            pendingProtectedDestination = null
+                        }
+                    }
+                )
+            }
         }
         composable<GospelReadings> {
             LaunchedEffect(Unit) {
@@ -326,7 +387,9 @@ fun PrayerNavigation (
                 onPersonGenderChanged = viewModel::onPersonGenderChanged,
                 onPersonStatusChanged = viewModel::onPersonStatusChanged,
                 onPersonAdded = viewModel::onPersonAdded,
-                onPersonRemoved = viewModel::onPersonRemoved
+                onPersonRemoved = viewModel::onPersonRemoved,
+                onGoogleAccountSelected = viewModel::onGoogleAccountSelected,
+                onGoogleAccountCleared = viewModel::onGoogleAccountCleared,
             )
         }
         composable<RuleEdit> {
@@ -353,6 +416,11 @@ fun PrayerNavigation (
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             SupportScreen(viewState = viewState)
         }
+        composable<Cloud> {
+            val viewModel: CloudViewModel = viewModel { CloudViewModel() }
+            val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+            CloudScreen(viewState = viewState)
+        }
         composable<Favorites> {
             val storage = rememberAppStorage()
             val viewModel: FavoritesViewModel = viewModel { FavoritesViewModel(storage) }
@@ -369,6 +437,7 @@ fun PrayerNavigation (
                     )
                 },
                 onRemoveFavorite = viewModel::removeFavorite,
+                onMoveFavorite = viewModel::moveFavorite,
             )
         }
         composable<PrayerListScreen> { backStackEntry ->
@@ -431,4 +500,11 @@ fun PrayerNavigation (
             )
         }
     }
+}
+
+private enum class ProtectedDestination {
+    PersonalData,
+    RuleEdit,
+    MessageBoard,
+    Cloud,
 }

@@ -41,6 +41,9 @@ class PersonalDataViewModel(
                     val isMale = async {
                         storage.booleanFlow(AppStorageKeys.MyGenderMale, false).first()
                     }
+                    val googleAccountEmail = async {
+                        storage.stringFlow(AppStorageKeys.GoogleAccountEmail, "").first()
+                    }
                     val parents = async {
                         decodePeople(storage.stringFlow(AppStorageKeys.PersonalParents, "").first())
                     }
@@ -62,6 +65,7 @@ class PersonalDataViewModel(
                     LoadedPersonalData(
                         nameImenit = nameImenit.await(),
                         duhovnik = duhovnik.await(),
+                        googleAccountEmail = googleAccountEmail.await(),
                         isMale = isMale.await(),
                         parents = parents.await(),
                         relatives = relatives.await(),
@@ -76,6 +80,7 @@ class PersonalDataViewModel(
             viewStateFlow.value = PersonalDataViewState(
                 nameImenit = loaded.nameImenit,
                 duhovnik = loaded.duhovnik,
+                googleAccountEmail = loaded.googleAccountEmail,
                 isMale = loaded.isMale,
                 sections = listOf(
                     PersonalSectionState(PersonalSectionType.Parents, loaded.parents),
@@ -116,6 +121,18 @@ class PersonalDataViewModel(
     fun onGenderChanged(isMale: Boolean) {
         viewStateFlow.value = viewStateFlow.value.copy(isMale = isMale)
         viewModelScope.launch { storage.setBoolean(AppStorageKeys.MyGenderMale, isMale) }
+    }
+
+    fun onGoogleAccountSelected(email: String) {
+        val trimmed = email.trim()
+        if (trimmed.isEmpty()) return
+        viewStateFlow.value = viewStateFlow.value.copy(googleAccountEmail = trimmed)
+        viewModelScope.launch { storage.setString(AppStorageKeys.GoogleAccountEmail, trimmed) }
+    }
+
+    fun onGoogleAccountCleared() {
+        viewStateFlow.value = viewStateFlow.value.copy(googleAccountEmail = "")
+        viewModelScope.launch { storage.setString(AppStorageKeys.GoogleAccountEmail, "") }
     }
 
     fun onPersonNameChanged(type: PersonalSectionType, index: Int, value: String) {
@@ -202,6 +219,7 @@ class PersonalDataViewModel(
 private data class LoadedPersonalData(
     val nameImenit: String,
     val duhovnik: String,
+    val googleAccountEmail: String,
     val isMale: Boolean,
     val parents: List<PersonalPerson>,
     val relatives: List<PersonalPerson>,

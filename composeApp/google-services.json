@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1038123565768",
+    "project_id": "prayerkmp",
+    "storage_bucket": "prayerkmp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038123565768:android:c919655b17f3c37df59bfd",
+        "android_client_info": {
+          "package_name": "com.vladdrummer.prayerkmp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038123565768-8s8q7euosvi9fr5dbdk77ij5r8b5mesv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vladdrummer.prayerkmp",
+            "certificate_hash": "ffdac38466d85e7bcbf1756b49fb46f42d7fb6e5"
+          }
+        },
+        {
+          "client_id": "1038123565768-df9ksjbfsir3cmg3eknrd3t9mrpvtdu9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vladdrummer.prayerkmp",
+            "certificate_hash": "cddfa67d1aa7a132b0c74d25cfad8d6b35ecb1c9"
+          }
+        },
+        {
+          "client_id": "1038123565768-4bte09n128arq4nrm4ttpm4ipl5kj22c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnfkBaw4DRP_wd2N7WTJRlFDPoE6zEbuM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038123565768-4bte09n128arq4nrm4ttpm4ipl5kj22c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

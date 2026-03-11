@@ -31,15 +31,21 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import com.vladdrummer.prayerkmp.feature.auth.GoogleEmailAuthBottomSheet
 import com.vladdrummer.prayerkmp.feature.personaldata.view_model.DEFAULT_DUHOVNIK
 import com.vladdrummer.prayerkmp.feature.personaldata.view_model.DEFAULT_NAME_IMENIT
 import com.vladdrummer.prayerkmp.feature.personaldata.view_model.DEFAULT_PERSON_NAME
@@ -59,7 +65,11 @@ fun PersonalDataScreen(
     onPersonStatusChanged: (PersonalSectionType, Int, Int) -> Unit,
     onPersonAdded: (PersonalSectionType) -> Unit,
     onPersonRemoved: (PersonalSectionType, Int) -> Unit,
+    onGoogleAccountSelected: (String) -> Unit,
+    onGoogleAccountCleared: () -> Unit,
 ) {
+    var isGoogleSheetVisible by remember { mutableStateOf(false) }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,6 +139,49 @@ fun PersonalDataScreen(
             }
         }
 
+        item(key = "google_account_card") {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Облако и авторизация",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = if (viewState.googleAccountEmail.isBlank()) {
+                            "Google-аккаунт не подключен"
+                        } else {
+                            "Подключен: ${viewState.googleAccountEmail}"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CompactActionButton(
+                            text = if (viewState.googleAccountEmail.isBlank()) "Подключить" else "Сменить",
+                            onClick = {
+                                isGoogleSheetVisible = true
+                            }
+                        )
+                        if (viewState.googleAccountEmail.isNotBlank()) {
+                            CompactActionButton(text = "Отключить", onClick = onGoogleAccountCleared)
+                        }
+                    }
+                }
+            }
+        }
+
         val orderedSections = listOf(
             PersonalSectionType.Parents,
             PersonalSectionType.Relatives,
@@ -151,6 +204,16 @@ fun PersonalDataScreen(
                 )
             }
         }
+    }
+
+    if (isGoogleSheetVisible) {
+        GoogleEmailAuthBottomSheet(
+            onDismiss = { isGoogleSheetVisible = false },
+            onAuthorized = { email ->
+                onGoogleAccountSelected(email)
+                isGoogleSheetVisible = false
+            }
+        )
     }
 }
 
@@ -224,8 +287,10 @@ private fun SectionCard(
                                     onClick = {
                                         val next = if (person.status <= 0) statuses.lastIndex else person.status - 1
                                         onPersonStatusChanged(type, index, next)
-                                    }
-                                ) { Text("<") }
+                                    },
+                                    shape = RoundedCornerShape(10.dp),
+                                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                ) { Text("<", style = MaterialTheme.typography.labelLarge) }
                                 Text(
                                     text = "Статус: ${statuses.getOrElse(person.status) { "" }}",
                                     modifier = Modifier,
@@ -236,8 +301,10 @@ private fun SectionCard(
                                     onClick = {
                                         val next = if (person.status >= statuses.lastIndex) 0 else person.status + 1
                                         onPersonStatusChanged(type, index, next)
-                                    }
-                                ) { Text(">") }
+                                    },
+                                    shape = RoundedCornerShape(10.dp),
+                                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                ) { Text(">", style = MaterialTheme.typography.labelLarge) }
                             }
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -285,6 +352,34 @@ private fun SectionCard(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun CompactActionButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier
+            .height(34.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 1.dp
+    ) {
+        Box(
+            modifier = Modifier.padding(horizontal = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }

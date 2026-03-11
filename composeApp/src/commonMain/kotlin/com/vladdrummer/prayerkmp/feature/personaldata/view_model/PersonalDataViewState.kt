@@ -33,6 +33,7 @@ data class PersonalSectionState(
 data class PersonalDataViewState(
     val nameImenit: String = DEFAULT_NAME_IMENIT,
     val duhovnik: String = DEFAULT_DUHOVNIK,
+    val googleAccountEmail: String = "",
     val isMale: Boolean = false,
     val sections: List<PersonalSectionState> = PersonalSectionType.entries.map { PersonalSectionState(type = it) },
 )

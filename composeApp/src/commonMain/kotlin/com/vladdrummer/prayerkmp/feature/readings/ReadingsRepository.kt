@@ -14,7 +14,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 object ReadingsRepository {
-    private const val READINGS_URL = "http://78.24.223.50/readings.json"
+    private const val READINGS_URL = "https://vladdrummer.ru/readings.json"
     private const val BOOKS_XML_PATH = "files/book.xml"
     private const val READINGS_XML_PATH = "files/readings.xml"
     private const val CACHE_NOT_FOUND = "__NOT_FOUND__"

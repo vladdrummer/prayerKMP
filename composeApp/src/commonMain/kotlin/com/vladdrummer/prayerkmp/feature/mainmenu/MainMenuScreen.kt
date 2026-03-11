@@ -33,7 +33,7 @@ fun MainMenuScreen(
 ) {
     var selectedItemId by remember { mutableStateOf<Int?>(null) }
     var isNavigationInProgress by remember { mutableStateOf(false) }
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
         val minCardWidth = calculateMinCardWidth(maxWidth, viewState.items)
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = minCardWidth),

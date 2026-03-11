@@ -39,6 +39,7 @@ object AppStorageKeys {
     const val PsalterLastPage = "psalter_last_page"
     const val PsalterSelectedDeadNames = "psalter_selected_dead_names"
     const val PsalterSelectedHealthNames = "psalter_selected_health_names"
+    const val GoogleAccountEmail = "google_account_email"
 }
 
 @Composable

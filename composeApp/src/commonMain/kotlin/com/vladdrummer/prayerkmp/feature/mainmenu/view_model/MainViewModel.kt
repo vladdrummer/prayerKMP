@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.vladdrummer.prayerkmp.feature.tableofcontents.TableOfContentsRepository
 import kotlinproject.composeapp.generated.resources.bible
+import kotlinproject.composeapp.generated.resources.cloud
 import kotlinproject.composeapp.generated.resources.gospel
 import kotlinproject.composeapp.generated.resources.message_board
 import kotlinproject.composeapp.generated.resources.personal_data
@@ -30,6 +31,7 @@ class MainViewModel(): ViewModel() {
         const val PSALTER_ITEM_ID = 104
         const val MESSAGE_BOARD_ITEM_ID = 105
         const val SUPPORT_ITEM_ID = 106
+        const val CLOUD_ITEM_ID = 107
     }
 
     val viewState: StateFlow<MainViewState>
@@ -95,6 +97,13 @@ class MainViewModel(): ViewModel() {
                     id = MESSAGE_BOARD_ITEM_ID,
                     title = "Молитвы друг за друга",
                     drawable = Res.drawable.message_board
+                )
+            )
+            contentList.add(
+                MainMenuItem(
+                    id = CLOUD_ITEM_ID,
+                    title = "Облачное сохранение",
+                    drawable = Res.drawable.cloud
                 )
             )
             contentList.add(
