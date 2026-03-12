@@ -45,6 +45,8 @@ import com.vladdrummer.prayerkmp.feature.ruleedit.RuleEditScreen
 import com.vladdrummer.prayerkmp.feature.ruleedit.view_model.RuleEditViewModel
 import com.vladdrummer.prayerkmp.feature.support.SupportScreen
 import com.vladdrummer.prayerkmp.feature.support.view_model.SupportViewModel
+import com.vladdrummer.prayerkmp.feature.subscription.PremiumOfferDialog
+import com.vladdrummer.prayerkmp.feature.subscription.SubscriptionStatusManager
 import com.vladdrummer.prayerkmp.feature.navigation.PrayerListScreen.PrayerListScreenType
 import com.vladdrummer.prayerkmp.feature.storage.AppStorageKeys
 import com.vladdrummer.prayerkmp.feature.storage.rememberAppStorage
@@ -60,15 +62,23 @@ fun PrayerNavigation (
     navController: NavHostController,
     onNavigateToContentListStarted: (String) -> Unit = {}
 ) {
+    val rootStorage = rememberAppStorage()
+    val rootScope = rememberCoroutineScope()
+    val authEmail by rootStorage.stringFlow(AppStorageKeys.GoogleAccountEmail, "").collectAsStateWithLifecycle("")
+    val subscriptionManager = remember(rootStorage, rootScope) {
+        SubscriptionStatusManager(storage = rootStorage, scope = rootScope)
+    }
+    val subscriptionState by subscriptionManager.state.collectAsStateWithLifecycle()
+    LaunchedEffect(authEmail) {
+        subscriptionManager.start(authEmail)
+    }
     NavHost(
         modifier = modifier,
         startDestination = MainMenu,
         navController = navController
     ) {
         composable<MainMenu> {
-            val storage = rememberAppStorage()
             val scope = rememberCoroutineScope()
-            val authEmail by storage.stringFlow(AppStorageKeys.GoogleAccountEmail, "").collectAsStateWithLifecycle("")
             var pendingProtectedDestination by remember { mutableStateOf<ProtectedDestination?>(null) }
             val platformName = remember { getPlatform().name.lowercase() }
             val isAndroidPlatform = platformName.startsWith("android")
@@ -137,7 +147,7 @@ fun PrayerNavigation (
                     onDismiss = { pendingProtectedDestination = null },
                     onAuthorized = { email ->
                         scope.launch {
-                            storage.setString(AppStorageKeys.GoogleAccountEmail, email)
+                            rootStorage.setString(AppStorageKeys.GoogleAccountEmail, email)
                             when (pendingProtectedDestination) {
                                 ProtectedDestination.PersonalData -> navController.navigate(PersonalData)
                                 ProtectedDestination.RuleEdit -> navController.navigate(RuleEdit)
@@ -376,10 +386,21 @@ fun PrayerNavigation (
         }
         composable<PersonalData> {
             val storage = rememberAppStorage()
+            val isSubscriptionLocked = authEmail.isNotBlank() && !subscriptionState.hasActiveSubscription
+            var showPremiumOffer by remember { mutableStateOf(isSubscriptionLocked) }
+            LaunchedEffect(authEmail) {
+                if (authEmail.isNotBlank()) {
+                    subscriptionManager.refresh(email = authEmail, force = true)
+                }
+            }
+            LaunchedEffect(isSubscriptionLocked) {
+                if (isSubscriptionLocked) showPremiumOffer = true
+            }
             val viewModel: PersonalDataViewModel = viewModel { PersonalDataViewModel(storage) }
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             PersonalDataScreen(
                 viewState = viewState,
+                editingEnabled = !isSubscriptionLocked,
                 onNameImenitChanged = viewModel::onNameImenitChanged,
                 onDuhovnikChanged = viewModel::onDuhovnikChanged,
                 onGenderChanged = viewModel::onGenderChanged,
@@ -391,13 +412,27 @@ fun PrayerNavigation (
                 onGoogleAccountSelected = viewModel::onGoogleAccountSelected,
                 onGoogleAccountCleared = viewModel::onGoogleAccountCleared,
             )
+            if (showPremiumOffer && isSubscriptionLocked) {
+                PremiumOfferDialog(onDismiss = { showPremiumOffer = false })
+            }
         }
         composable<RuleEdit> {
             val storage = rememberAppStorage()
+            val isSubscriptionLocked = authEmail.isNotBlank() && !subscriptionState.hasActiveSubscription
+            var showPremiumOffer by remember { mutableStateOf(isSubscriptionLocked) }
+            LaunchedEffect(authEmail) {
+                if (authEmail.isNotBlank()) {
+                    subscriptionManager.refresh(email = authEmail, force = true)
+                }
+            }
+            LaunchedEffect(isSubscriptionLocked) {
+                if (isSubscriptionLocked) showPremiumOffer = true
+            }
             val viewModel: RuleEditViewModel = viewModel { RuleEditViewModel(storage, PrayerTextBuilder(storage)) }
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             RuleEditScreen(
                 viewState = viewState,
+                editingEnabled = !isSubscriptionLocked,
                 onSelectRule = viewModel::selectRule,
                 onPartCheckedChange = viewModel::setPartEnabled,
                 onRemoveAdditionalPrayer = viewModel::removeAdditionalPrayer,
@@ -405,11 +440,34 @@ fun PrayerNavigation (
                 onOpenAdditionalPrayerPreview = viewModel::openAdditionalPrayerPreview,
                 onClosePreview = viewModel::closePreview,
             )
+            if (showPremiumOffer && isSubscriptionLocked) {
+                PremiumOfferDialog(onDismiss = { showPremiumOffer = false })
+            }
         }
         composable<MessageBoard> {
-            val viewModel: MessageBoardViewModel = viewModel { MessageBoardViewModel() }
+            val storage = rememberAppStorage()
+            val platformName = remember { getPlatform().name.lowercase() }
+            val senderType = remember(platformName) {
+                if (platformName.startsWith("ios")) 4 else 3
+            }
+            val viewModel: MessageBoardViewModel = viewModel(
+                key = "messageboard-$authEmail"
+            ) {
+                MessageBoardViewModel(
+                    storage = storage,
+                    currentUserEmail = authEmail,
+                    senderType = senderType
+                )
+            }
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
-            MessageBoardScreen(viewState = viewState)
+            MessageBoardScreen(
+                viewState = viewState,
+                onRefresh = viewModel::refresh,
+                onVote = viewModel::vote,
+                onRemove = viewModel::removeMessage,
+                onPost = viewModel::postMessage,
+                onEdit = viewModel::editMessage,
+            )
         }
         composable<Support> {
             val viewModel: SupportViewModel = viewModel { SupportViewModel() }
@@ -464,6 +522,13 @@ fun PrayerNavigation (
             val args = backStackEntry.toRoute<PrayerScreen>()
             val storage = rememberAppStorage()
             val scope = rememberCoroutineScope()
+            val isSubscriptionLocked = authEmail.isNotBlank() && !subscriptionState.hasActiveSubscription
+            var showPremiumOffer by remember { mutableStateOf(false) }
+            LaunchedEffect(authEmail) {
+                if (authEmail.isNotBlank()) {
+                    subscriptionManager.refresh(email = authEmail, force = true)
+                }
+            }
             val viewModel: PrayerViewModel = viewModel {
                 PrayerViewModel(
                     resId = args.resId,
@@ -476,12 +541,14 @@ fun PrayerNavigation (
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             PrayerReadingScreen(
                 viewState = viewState,
+                isPremiumLocked = isSubscriptionLocked,
                 onIncreaseFont = viewModel::increaseFontSize,
                 onDecreaseFont = viewModel::decreaseFontSize,
                 onSwitchFont = viewModel::switchFont,
                 onResetFontDefaults = viewModel::resetFontDefaults,
                 onToggleMorning = viewModel::toggleMorning,
                 onToggleEvening = viewModel::toggleEvening,
+                onPremiumBlockedAction = { showPremiumOffer = true },
                 onNavigateBackWithoutSave = {
                     scope.launch {
                         val json = Json { ignoreUnknownKeys = true }
@@ -498,6 +565,9 @@ fun PrayerNavigation (
                     }
                 }
             )
+            if (showPremiumOffer && isSubscriptionLocked) {
+                PremiumOfferDialog(onDismiss = { showPremiumOffer = false })
+            }
         }
     }
 }

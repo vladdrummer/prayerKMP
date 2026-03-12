@@ -40,6 +40,8 @@ import com.vladdrummer.prayerkmp.feature.ruleedit.view_model.RuleType
 @Composable
 fun RuleEditScreen(
     viewState: RuleEditViewState,
+    modifier: Modifier = Modifier,
+    editingEnabled: Boolean = true,
     onSelectRule: (RuleType) -> Unit,
     onPartCheckedChange: (Int, Boolean) -> Unit,
     onRemoveAdditionalPrayer: (String) -> Unit,
@@ -49,8 +51,9 @@ fun RuleEditScreen(
 ) {
     val additionalInsertIndex = if (viewState.selectedRule == RuleType.Morning) 20 else 12
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
+            .padding(horizontal = 12.dp)
             .padding(top = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -78,6 +81,7 @@ fun RuleEditScreen(
             SegmentedButton(
                 shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
                 selected = viewState.selectedRule == RuleType.Morning,
+                enabled = editingEnabled,
                 onClick = { onSelectRule(RuleType.Morning) },
                 modifier = Modifier.weight(1f),
                 label = { Text("Утреннее") }
@@ -85,6 +89,7 @@ fun RuleEditScreen(
             SegmentedButton(
                 shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
                 selected = viewState.selectedRule == RuleType.Evening,
+                enabled = editingEnabled,
                 onClick = { onSelectRule(RuleType.Evening) },
                 modifier = Modifier.weight(1f),
                 label = { Text("Вечернее") }
@@ -104,6 +109,7 @@ fun RuleEditScreen(
                 RulePartRow(
                     title = part.title,
                     checked = part.enabled,
+                    editingEnabled = editingEnabled,
                     onCheckedChange = { onPartCheckedChange(part.index, it) },
                     onOpenPreview = { onOpenPartPreview(part.index) }
                 )
@@ -128,7 +134,8 @@ fun RuleEditScreen(
                                     AdditionalPrayerRow(
                                         title = prayer.title,
                                         onOpenPreview = { onOpenAdditionalPrayerPreview(prayer.resId) },
-                                        onRemove = { onRemoveAdditionalPrayer(prayer.resId) }
+                                        onRemove = { onRemoveAdditionalPrayer(prayer.resId) },
+                                        editingEnabled = editingEnabled,
                                     )
                                 }
                             }
@@ -175,6 +182,7 @@ fun RuleEditScreen(
 private fun RulePartRow(
     title: String,
     checked: Boolean,
+    editingEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onOpenPreview: () -> Unit,
 ) {
@@ -190,7 +198,7 @@ private fun RulePartRow(
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+            Checkbox(checked = checked, enabled = editingEnabled, onCheckedChange = onCheckedChange)
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
@@ -211,6 +219,7 @@ private fun AdditionalPrayerRow(
     title: String,
     onOpenPreview: () -> Unit,
     onRemove: () -> Unit,
+    editingEnabled: Boolean,
 ) {
     Row(
         modifier = Modifier
@@ -229,7 +238,7 @@ private fun AdditionalPrayerRow(
                 contentDescription = "Просмотр"
             )
         }
-        IconButton(onClick = onRemove) {
+        IconButton(onClick = onRemove, enabled = editingEnabled) {
             Icon(
                 imageVector = Icons.Filled.Cancel,
                 contentDescription = "Удалить"

@@ -1,5 +1,12 @@
 package com.vladdrummer.prayerkmp.feature.psalter
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +53,7 @@ fun PsalterScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
+            .padding(horizontal = 12.dp)
             .padding(top = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -132,7 +140,13 @@ fun PsalterScreen(
                             modifier = Modifier.size(22.dp)
                         )
                     }
-                    if (expanded) {
+                    AnimatedVisibility(
+                        visible = expanded,
+                        enter = fadeIn(spring(stiffness = Spring.StiffnessMediumLow)) +
+                            expandVertically(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)),
+                        exit = fadeOut(spring(stiffness = Spring.StiffnessMedium)) +
+                            shrinkVertically(animationSpec = spring(stiffness = Spring.StiffnessMedium))
+                    ) {
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             verticalArrangement = Arrangement.spacedBy(6.dp),

@@ -40,6 +40,11 @@ object AppStorageKeys {
     const val PsalterSelectedDeadNames = "psalter_selected_dead_names"
     const val PsalterSelectedHealthNames = "psalter_selected_health_names"
     const val GoogleAccountEmail = "google_account_email"
+    const val MessageBoardVotedIds = "message_board_voted_ids"
+    const val PremiumSubscriptionActive = "premium_subscription_active"
+    const val PremiumSubscriptionEmail = "premium_subscription_email"
+    const val PremiumSubscriptionSource = "premium_subscription_source"
+    const val PremiumSubscriptionCheckedAt = "premium_subscription_checked_at"
 }
 
 @Composable

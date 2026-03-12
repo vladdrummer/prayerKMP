@@ -1,12 +1,14 @@
 package com.vladdrummer.prayerkmp.feature.bible
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -31,6 +33,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.TextDecrease
@@ -120,7 +124,9 @@ fun BibleScreen(
     when (viewState.mode) {
         BibleMode.Books -> {
             LazyColumn(
-                modifier = modifier.fillMaxSize(),
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 val lastBook = lastReadBookOverride ?: viewState.lastReadBook
@@ -170,14 +176,33 @@ fun BibleScreen(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                         ) {
-                            Text(
-                                text = bookName,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = bookName,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Icon(
+                                    imageVector = if (viewState.expandedBook == bookName) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                    contentDescription = if (viewState.expandedBook == bookName) "Свернуть" else "Развернуть",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
                         }
-                        if (viewState.expandedBook == bookName) {
+                        AnimatedVisibility(
+                            visible = viewState.expandedBook == bookName,
+                            enter = fadeIn(spring(stiffness = Spring.StiffnessMediumLow)) +
+                                expandVertically(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)),
+                            exit = fadeOut(spring(stiffness = Spring.StiffnessMedium)) +
+                                shrinkVertically(animationSpec = spring(stiffness = Spring.StiffnessMedium))
+                        ) {
                             FlowRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -279,7 +304,7 @@ fun BibleScreen(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .verticalScroll(scrollState)
-                                        .padding(bottom = 88.dp),
+                                        .padding(start = 12.dp, end = 12.dp, bottom = 88.dp),
                                     verticalArrangement = Arrangement.spacedBy(10.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {

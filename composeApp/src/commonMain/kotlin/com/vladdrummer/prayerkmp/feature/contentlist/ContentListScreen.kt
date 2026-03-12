@@ -39,7 +39,9 @@ fun ContentListScreen(
     onPrayerClick: (PrayerData) -> Unit = {}
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         item{

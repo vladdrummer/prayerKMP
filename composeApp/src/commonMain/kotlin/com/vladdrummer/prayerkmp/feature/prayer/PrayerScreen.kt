@@ -77,12 +77,14 @@ import org.jetbrains.compose.resources.painterResource
 fun PrayerScreen(
     viewState: PrayerViewState,
     modifier: Modifier = Modifier,
+    isPremiumLocked: Boolean = false,
     onIncreaseFont: () -> Unit = {},
     onDecreaseFont: () -> Unit = {},
     onSwitchFont: () -> Unit = {},
     onResetFontDefaults: () -> Unit = {},
     onToggleMorning: () -> Unit = {},
     onToggleEvening: () -> Unit = {},
+    onPremiumBlockedAction: () -> Unit = {},
     onNavigateBackWithoutSave: () -> Unit = {},
     bottomActionText: String? = null,
     onBottomActionClick: (() -> Unit)? = null,
@@ -173,6 +175,7 @@ fun PrayerScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(horizontal = 12.dp)
                 .nestedScroll(stopAutoScrollOnUserScroll)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -315,7 +318,10 @@ fun PrayerScreen(
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     IconButton(
-                                        onClick = onToggleMorning,
+                                        onClick = {
+                                            if (isPremiumLocked) onPremiumBlockedAction()
+                                            else onToggleMorning()
+                                        },
                                         modifier = Modifier.size(42.dp)
                                     ) {
                                         Icon(
@@ -332,7 +338,10 @@ fun PrayerScreen(
                                         )
                                     }
                                     IconButton(
-                                        onClick = onToggleEvening,
+                                        onClick = {
+                                            if (isPremiumLocked) onPremiumBlockedAction()
+                                            else onToggleEvening()
+                                        },
                                         modifier = Modifier.size(42.dp)
                                     ) {
                                         Icon(

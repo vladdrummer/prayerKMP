@@ -57,6 +57,8 @@ import com.vladdrummer.prayerkmp.feature.personaldata.view_model.statusList
 @Composable
 fun PersonalDataScreen(
     viewState: PersonalDataViewState,
+    modifier: Modifier = Modifier,
+    editingEnabled: Boolean = true,
     onNameImenitChanged: (String) -> Unit,
     onDuhovnikChanged: (String) -> Unit,
     onGenderChanged: (Boolean) -> Unit,
@@ -71,8 +73,9 @@ fun PersonalDataScreen(
     var isGoogleSheetVisible by remember { mutableStateOf(false) }
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
+            .padding(horizontal = 12.dp)
             .padding(vertical = 10.dp),
         contentPadding = PaddingValues(bottom = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -97,12 +100,14 @@ fun PersonalDataScreen(
                         modifier = Modifier.fillMaxWidth(),
                         value = if (viewState.nameImenit == DEFAULT_NAME_IMENIT) "" else viewState.nameImenit,
                         onValueChange = onNameImenitChanged,
+                        enabled = editingEnabled,
                         singleLine = true,
                         label = { Text("Имя") },
                         placeholder = { Text(DEFAULT_NAME_IMENIT) },
                     )
                     GenderToggle(
                         isMale = viewState.isMale,
+                        enabled = editingEnabled,
                         onSelectMale = { onGenderChanged(true) },
                         onSelectFemale = { onGenderChanged(false) },
                         modifier = Modifier.fillMaxWidth()
@@ -131,6 +136,7 @@ fun PersonalDataScreen(
                         modifier = Modifier.fillMaxWidth(),
                         value = if (viewState.duhovnik == DEFAULT_DUHOVNIK) "" else viewState.duhovnik,
                         onValueChange = onDuhovnikChanged,
+                        enabled = editingEnabled,
                         singleLine = true,
                         label = { Text("Имя духовника") },
                         placeholder = { Text(DEFAULT_DUHOVNIK) },
@@ -172,10 +178,11 @@ fun PersonalDataScreen(
                             text = if (viewState.googleAccountEmail.isBlank()) "Подключить" else "Сменить",
                             onClick = {
                                 isGoogleSheetVisible = true
-                            }
+                            },
+                            enabled = editingEnabled
                         )
                         if (viewState.googleAccountEmail.isNotBlank()) {
-                            CompactActionButton(text = "Отключить", onClick = onGoogleAccountCleared)
+                            CompactActionButton(text = "Отключить", onClick = onGoogleAccountCleared, enabled = editingEnabled)
                         }
                     }
                 }
@@ -201,6 +208,7 @@ fun PersonalDataScreen(
                     onPersonStatusChanged = onPersonStatusChanged,
                     onPersonAdded = onPersonAdded,
                     onPersonRemoved = onPersonRemoved,
+                    editingEnabled = editingEnabled,
                 )
             }
         }
@@ -226,6 +234,7 @@ private fun SectionCard(
     onPersonStatusChanged: (PersonalSectionType, Int, Int) -> Unit,
     onPersonAdded: (PersonalSectionType) -> Unit,
     onPersonRemoved: (PersonalSectionType, Int) -> Unit,
+    editingEnabled: Boolean,
 ) {
     val statuses = statusList(type.isDead)
     Card(
@@ -264,12 +273,14 @@ private fun SectionCard(
                             modifier = Modifier.fillMaxWidth(),
                             value = if (person.name == DEFAULT_PERSON_NAME) "" else person.name,
                             onValueChange = { onPersonNameChanged(type, index, it) },
+                            enabled = editingEnabled,
                             singleLine = true,
                             label = { Text("Имя") },
                             placeholder = { Text(DEFAULT_PERSON_NAME) },
                         )
                         GenderToggle(
                             isMale = person.gender == 1,
+                            enabled = editingEnabled,
                             onSelectMale = { onPersonGenderChanged(type, index, 1) },
                             onSelectFemale = { onPersonGenderChanged(type, index, 0) },
                             modifier = Modifier.fillMaxWidth()
@@ -288,6 +299,7 @@ private fun SectionCard(
                                         val next = if (person.status <= 0) statuses.lastIndex else person.status - 1
                                         onPersonStatusChanged(type, index, next)
                                     },
+                                    enabled = editingEnabled,
                                     shape = RoundedCornerShape(10.dp),
                                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                                 ) { Text("<", style = MaterialTheme.typography.labelLarge) }
@@ -302,6 +314,7 @@ private fun SectionCard(
                                         val next = if (person.status >= statuses.lastIndex) 0 else person.status + 1
                                         onPersonStatusChanged(type, index, next)
                                     },
+                                    enabled = editingEnabled,
                                     shape = RoundedCornerShape(10.dp),
                                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                                 ) { Text(">", style = MaterialTheme.typography.labelLarge) }
@@ -318,7 +331,8 @@ private fun SectionCard(
                                     ) {
                                         IconButton(
                                             onClick = { onPersonRemoved(type, index) },
-                                            modifier = Modifier.size(32.dp)
+                                            modifier = Modifier.size(32.dp),
+                                            enabled = editingEnabled
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Default.Close,
@@ -337,7 +351,8 @@ private fun SectionCard(
                                     ) {
                                         IconButton(
                                             onClick = { onPersonAdded(type) },
-                                            modifier = Modifier.size(32.dp)
+                                            modifier = Modifier.size(32.dp),
+                                            enabled = editingEnabled
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Default.Add,
@@ -361,12 +376,13 @@ private fun CompactActionButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     Surface(
         modifier = modifier
             .height(34.dp)
             .clip(RoundedCornerShape(10.dp))
-            .clickable(onClick = onClick),
+            .clickable(enabled = enabled, onClick = onClick),
         shape = RoundedCornerShape(10.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 1.dp
@@ -378,7 +394,7 @@ private fun CompactActionButton(
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
-                color = MaterialTheme.colorScheme.onSurface
+                color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -387,6 +403,7 @@ private fun CompactActionButton(
 @Composable
 private fun GenderToggle(
     isMale: Boolean,
+    enabled: Boolean,
     onSelectMale: () -> Unit,
     onSelectFemale: () -> Unit,
     modifier: Modifier = Modifier,
@@ -423,7 +440,7 @@ private fun GenderToggle(
                     modifier = Modifier
                         .weight(1f, fill = true)
                         .fillMaxHeight()
-                        .clickable { onSelectMale() },
+                        .clickable(enabled = enabled) { onSelectMale() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -436,7 +453,7 @@ private fun GenderToggle(
                     modifier = Modifier
                         .weight(1f, fill = true)
                         .fillMaxHeight()
-                        .clickable { onSelectFemale() },
+                        .clickable(enabled = enabled) { onSelectFemale() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(

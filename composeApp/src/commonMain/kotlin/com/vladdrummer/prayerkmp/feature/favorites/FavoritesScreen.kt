@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun FavoritesScreen(
     viewState: FavoritesViewState,
+    modifier: Modifier = Modifier,
     onOpenPrayer: (FavoritePrayerUi) -> Unit,
     onRemoveFavorite: (String) -> Unit,
     onMoveFavorite: (fromIndex: Int, toIndex: Int) -> Unit,
@@ -53,7 +54,9 @@ fun FavoritesScreen(
     }
     if (viewState.items.isEmpty()) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -73,8 +76,9 @@ fun FavoritesScreen(
     var draggingOffsetY by remember { mutableFloatStateOf(0f) }
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
+            .padding(horizontal = 12.dp)
             .pointerInput(listState) {
                 detectDragGesturesAfterLongPress(
                     onDragStart = { offset ->

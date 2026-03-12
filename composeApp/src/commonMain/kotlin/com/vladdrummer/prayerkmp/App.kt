@@ -480,8 +480,7 @@ fun App() {
                 ) {
                     PrayerNavigation(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
+                            .fillMaxSize(),
                         navController = navController,
                         onNavigateToContentListStarted = { title ->
                             pendingTopBarTitle = title
