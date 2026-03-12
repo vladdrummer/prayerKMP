@@ -1,6 +1,8 @@
 package com.vladdrummer.prayerkmp.feature.mainmenu
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,58 +23,105 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.fletchmckee.liquid.LiquidState
+import io.github.fletchmckee.liquid.liquid
 
 @Composable
 fun MainMenuCard(
     item: MainMenuCardItem,
     onClick: () -> Unit,
+    isGlass: Boolean = false,
+    liquidState: LiquidState? = null,
     modifier: Modifier = Modifier
 ) {
+    val shape = RoundedCornerShape(16.dp)
     val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
     val iconTint = if (isDarkTheme) Color.White else Color.Unspecified
-    Card(
-        onClick = onClick,
-        modifier = modifier
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                shape = RoundedCornerShape(16.dp)
-            ),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
+    val liquidTint = if (isDarkTheme) {
+        Color.White.copy(alpha = 0.08f)
+    } else {
+        Color.White.copy(alpha = 0.03f)
+    }
+    if (isGlass && liquidState != null) {
+        Box(
+            modifier = modifier
                 .defaultMinSize(minHeight = 156.dp)
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .liquid(liquidState) {
+                    this.shape = shape
+                    frost = 10.dp
+                    edge = 0.03f
+                    refraction = 0.5f
+                    curve = 0.5f
+                    tint = liquidTint
+                }
+                .shadow(
+                    elevation = 6.dp,
+                    shape = shape,
+                    clip = false
+                )
+                .clickable(onClick = onClick)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    shape = shape
+                )
         ) {
-            Icon(
-                painter = item.icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(10.dp)),
-                tint = iconTint
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = item.text,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleSmall.copy(lineHeight = 17.sp),
-                color = MaterialTheme.colorScheme.onSurface,
-                softWrap = true
-            )
+          //  CardContent(item = item, iconTint = iconTint)
         }
+    } else {
+        Card(
+            onClick = onClick,
+            modifier = modifier
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    shape = shape
+                ),
+            shape = shape,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        ) {
+            CardContent(item = item, iconTint = iconTint)
+        }
+    }
+}
+
+@Composable
+private fun CardContent(
+    item: MainMenuCardItem,
+    iconTint: Color
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .defaultMinSize(minHeight = 156.dp)
+            .padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = item.icon,
+            contentDescription = null,
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(10.dp)),
+            tint = iconTint
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = item.text,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleSmall.copy(lineHeight = 17.sp),
+            color = MaterialTheme.colorScheme.onSurface,
+            softWrap = true
+        )
     }
 }

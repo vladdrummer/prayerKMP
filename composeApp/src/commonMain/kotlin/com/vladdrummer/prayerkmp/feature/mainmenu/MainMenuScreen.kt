@@ -1,9 +1,10 @@
 package com.vladdrummer.prayerkmp.feature.mainmenu
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.background
@@ -25,8 +26,12 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vladdrummer.prayerkmp.getPlatform
 import com.vladdrummer.prayerkmp.feature.mainmenu.view_model.MainViewState
 import com.vladdrummer.prayerkmp.feature.mainmenu.view_model.MainMenuItem
+import io.github.fletchmckee.liquid.LiquidState
+import io.github.fletchmckee.liquid.liquefiable
+import io.github.fletchmckee.liquid.rememberLiquidState
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -37,20 +42,30 @@ fun MainMenuScreen(
 ) {
     var selectedItemId by remember { mutableStateOf<Int?>(null) }
     var isNavigationInProgress by remember { mutableStateOf(false) }
+    val platformName = remember { getPlatform().name }
+    val useLiquid = remember { isLiquidSupportedOnCurrentDevice(platformName) }
+    val liquidState = if (useLiquid) rememberLiquidState() else null
+
+    val menuBackground = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.06f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.04f),
+            MaterialTheme.colorScheme.surface
+        )
+    )
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.surface,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.06f),
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.04f),
-                        MaterialTheme.colorScheme.surface
-                    )
-                )
-            )
     ) {
+        ImageBackground(
+            liquidState = liquidState,
+            useLiquid = useLiquid,
+            backgroundBrush = menuBackground,
+            modifier = Modifier.fillMaxSize()
+        )
+
         val minCardWidth = calculateMinCardWidth(maxWidth, viewState.items)
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = minCardWidth),
@@ -68,6 +83,8 @@ fun MainMenuScreen(
                         icon = painterResource(item.drawable),
                         text = item.title
                     ),
+                    isGlass = useLiquid && liquidState != null,
+                    liquidState = liquidState,
                     onClick = {
                         if (isNavigationInProgress) return@MainMenuCard
                         isNavigationInProgress = true
@@ -82,6 +99,32 @@ fun MainMenuScreen(
             }
         }
     }
+}
+
+@Composable
+private fun ImageBackground(
+    liquidState: LiquidState?,
+    useLiquid: Boolean,
+    backgroundBrush: Brush,
+    modifier: Modifier = Modifier
+) {
+    if (useLiquid && liquidState != null) {
+        Box(
+            modifier = modifier
+                .liquefiable(liquidState)
+                .background(backgroundBrush)
+        )
+    } else {
+        Box(
+            modifier = modifier.background(backgroundBrush)
+        )
+    }
+}
+
+private fun isLiquidSupportedOnCurrentDevice(platformName: String): Boolean {
+    if (!platformName.startsWith("Android ")) return false
+    val apiLevel = platformName.removePrefix("Android ").trim().toIntOrNull() ?: return false
+    return apiLevel >= 33
 }
 
 private val WordDelimiterRegex = Regex("""[\s\-]+""")

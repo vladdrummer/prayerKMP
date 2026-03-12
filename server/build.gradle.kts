@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 plugins {
     kotlin("jvm")
@@ -9,13 +11,24 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(8)
+    // Build with a modern local JDK (works on Apple Silicon), while keeping bytecode Java 8.
+    jvmToolchain(17)
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_1_8)
     }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(8)
 }
 
 application {

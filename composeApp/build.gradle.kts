@@ -57,6 +57,7 @@ kotlin {
             implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
             implementation("androidx.datastore:datastore:1.2.0")
             implementation("androidx.datastore:datastore-preferences:1.2.0")
+            implementation("io.github.fletchmckee.liquid:liquid:1.1.1")
             api(libs.androidx.lifecycle.viewmodel)
         }
         commonTest.dependencies {
