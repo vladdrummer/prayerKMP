@@ -6,6 +6,8 @@ import com.vladdrummer.prayerkmp.feature.strings.getString
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.minus
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.SerialName
@@ -19,12 +21,122 @@ object ReadingsRepository {
     private const val READINGS_XML_PATH = "files/readings.xml"
     private const val CACHE_NOT_FOUND = "__NOT_FOUND__"
     private const val CACHE_KEY_PREFIX = "readings_cache_"
+    private const val CALENDAR_URL_TEMPLATE = "https://days.pravoslavie.ru/Days/%s.html"
 
     private val json = Json { ignoreUnknownKeys = true }
     private val httpClient by lazy { HttpClient() }
 
     private var booksByName: Map<String, String>? = null
     private var localReadingsByDate: Map<String, List<ReadingRef>>? = null
+    private var nameDaysByDate: Map<String, String>? = null
+
+    data class CalendarPreview(
+        val celebrating: String?,
+        val fast: String?,
+        val hymns: List<CalendarHymn>,
+    )
+
+    data class CalendarHymn(
+        val title: String,
+        val glas: String?,
+        val text: String,
+    )
+
+    suspend fun loadTodayCalendarPreview(): CalendarPreview {
+        val sourceDate = currentLocalDate() - DatePeriod(days = 13)
+        val day = sourceDate.dayOfMonth.toString().padStart(2, '0')
+        val month = sourceDate.monthNumber.toString().padStart(2, '0')
+        val dateKey = "${sourceDate.year}$month$day"
+        val url = "https://days.pravoslavie.ru/Days/$dateKey.html"
+        readingsLog("loadTodayCalendarPreview start, dateKey=$dateKey, url=$url")
+
+        val html = runCatching { httpClient.get(url).bodyAsText() }
+            .onFailure { readingsLog("calendar html request failed: ${it.message}") }
+            .getOrNull()
+            ?: return CalendarPreview(null, null, emptyList())
+
+        readingsLog("calendar html loaded, chars=${html.length}")
+        val celebrating = extractCalendarCelebrating(html)
+        val fast = extractCalendarFast(html)
+        val hymns = extractCalendarHymns(html)
+        readingsLog(
+            "calendar parsed celebrating='${celebrating.orEmpty().take(80)}', fast='${fast.orEmpty().take(80)}', hymns=${hymns.size}"
+        )
+        return CalendarPreview(celebrating = celebrating, fast = fast, hymns = hymns)
+    }
+
+    suspend fun loadTodayNameDays(): String? {
+        val today = currentLocalDate()
+        val key = "${today.dayOfMonth}.${today.monthNumber}."
+        val map = nameDaysByDate ?: run {
+            val xml = Res.readBytes("files/imenini.xml").decodeToString()
+            val parsed = parseNameDays(xml)
+            nameDaysByDate = parsed
+            readingsLog("name days xml parsed, dates=${parsed.size}")
+            parsed
+        }
+        val result = map[key]
+        readingsLog("loadTodayNameDays key=$key found=${!result.isNullOrBlank()}")
+        return result
+    }
+
+    suspend fun loadTodayReferences(storage: AppStorage): List<String> {
+        val today = currentLocalDate()
+        val dateCompact = "${today.dayOfMonth}.${today.monthNumber}.${today.year}"
+        val datePadded = "${today.dayOfMonth.toString().padStart(2, '0')}.${today.monthNumber.toString().padStart(2, '0')}.${today.year}"
+        readingsLog("loadTodayReferences start, dateCompact=$dateCompact, datePadded=$datePadded")
+
+        val cacheState = loadReadingsFromCache(storage, datePadded)
+        val readings = when (cacheState) {
+            is CacheState.Found -> {
+                readingsLog("refs cache hit: found refs=${cacheState.readings.size}, skip network")
+                cacheState.readings
+            }
+            CacheState.NotFound -> {
+                readingsLog("refs cache hit: not found marker, trying network refresh")
+                val networkReadings = loadReadingsFromNetwork(dateCompact, datePadded)
+                if (!networkReadings.isNullOrEmpty()) {
+                    saveReadingsToCache(storage, datePadded, networkReadings)
+                    networkReadings
+                } else {
+                    val localReadings = loadReadingsFromLocalXml(dateCompact, datePadded)
+                    if (!localReadings.isNullOrEmpty()) {
+                        saveReadingsToCache(storage, datePadded, localReadings)
+                        localReadings
+                    } else {
+                        saveNotFoundToCache(storage, datePadded)
+                        emptyList()
+                    }
+                }
+            }
+            CacheState.Miss -> {
+                readingsLog("refs cache miss, loading from network")
+                val networkReadings = loadReadingsFromNetwork(dateCompact, datePadded)
+                if (!networkReadings.isNullOrEmpty()) {
+                    saveReadingsToCache(storage, datePadded, networkReadings)
+                    networkReadings
+                } else {
+                    val localReadings = loadReadingsFromLocalXml(dateCompact, datePadded)
+                    if (!localReadings.isNullOrEmpty()) {
+                        saveReadingsToCache(storage, datePadded, localReadings)
+                        localReadings
+                    } else {
+                        saveNotFoundToCache(storage, datePadded)
+                        emptyList()
+                    }
+                }
+            }
+        }
+        val refs = readings.map { ref ->
+            if (ref.from != 0) {
+                "${ref.book} ${ref.chapter}:${ref.from}-${ref.to}"
+            } else {
+                "${ref.book} ${ref.chapter}"
+            }
+        }
+        readingsLog("loadTodayReferences success, refs=${refs.size}")
+        return refs
+    }
 
     suspend fun loadTodayHtml(
         storage: AppStorage,
@@ -345,6 +457,89 @@ object ReadingsRepository {
 
     private fun readingsLog(message: String) {
         println("readings: $message")
+    }
+
+    private fun parseNameDays(xml: String): Map<String, String> {
+        val dateRegex = Regex("""<date\b([^>]*)/>""", setOf(RegexOption.IGNORE_CASE))
+        val attrRegex = Regex("""(\w+)="([^"]*)"""")
+        val out = linkedMapOf<String, String>()
+        dateRegex.findAll(xml).forEach { match ->
+            val attrs = match.groupValues[1]
+            val attrMap = attrRegex.findAll(attrs).associate { it.groupValues[1] to it.groupValues[2] }
+            val date = attrMap["date"]?.trim().orEmpty()
+            if (date.isBlank()) return@forEach
+            val names = attrMap.entries
+                .filter { it.key.startsWith("name") }
+                .sortedBy { it.key.removePrefix("name").toIntOrNull() ?: Int.MAX_VALUE }
+                .map { it.value.trim() }
+                .filter { it.isNotBlank() }
+            if (names.isNotEmpty()) {
+                out[date] = names.joinToString(", ")
+            }
+        }
+        return out
+    }
+
+    private fun extractCalendarCelebrating(html: String): String? {
+        val blockRegex = Regex("""(?is)<div\s+class\s*=\s*["']?dd_text["']?\s*>(.*?)</div>""")
+        val raw = blockRegex.find(html)?.groupValues?.getOrNull(1)?.trim().orEmpty()
+        if (raw.isBlank()) return null
+        return raw
+            .replace(Regex("""<br\s*/?>""", RegexOption.IGNORE_CASE), ", ")
+            .replace(Regex("""<[^>]+>"""), " ")
+            .replace("&nbsp;", " ")
+            .replace("&quot;", "\"")
+            .replace("&amp;", "&")
+            .replace("&#39;", "'")
+            .replace(Regex("""\s{2,}"""), " ")
+            .trim()
+            .takeIf { it.isNotBlank() }
+    }
+
+    private fun extractCalendarFast(html: String): String? {
+        val blockRegex = Regex("""(?is)<span\s+class\s*=\s*["']?dd_tptxt["']?\s*>(.*?)</span>""")
+        val raw = blockRegex.find(html)?.groupValues?.getOrNull(1)?.trim().orEmpty()
+        if (raw.isBlank()) return null
+        return raw
+            .replace(Regex("""<[^>]+>"""), " ")
+            .replace("&nbsp;", " ")
+            .replace("&quot;", "\"")
+            .replace("&amp;", "&")
+            .replace("&#39;", "'")
+            .replace(Regex("""\s{2,}"""), " ")
+            .trim()
+            .takeIf { it.isNotBlank() }
+    }
+
+    private fun extractCalendarHymns(html: String): List<CalendarHymn> {
+        val blockRegex = Regex(
+            """(?is)<div\s+class=trop><div\s+class=trop_title>(.*?)</div>(?:\s*<div\s+class=trop_glas>(.*?)</div>)?\s*<div\s+class=trop_text>(.*?)(?:</div>|<br>)"""
+        )
+        return blockRegex.findAll(html).mapNotNull { match ->
+            val title = decodeSimpleHtml(match.groupValues[1])
+            val glas = decodeSimpleHtml(match.groupValues.getOrElse(2) { "" }).takeIf { it.isNotBlank() }
+            val textRaw = match.groupValues.getOrElse(3) { "" }
+            val text = decodeSimpleHtml(
+                textRaw
+                    .replace("<p>", "")
+                    .replace("</p>", "")
+                    .replace("//", "/")
+                    .replace("/", "<br />")
+            )
+            if (title.isBlank() || text.isBlank()) null else CalendarHymn(title = title, glas = glas, text = text)
+        }.toList()
+    }
+
+    private fun decodeSimpleHtml(value: String): String {
+        return value
+            .replace(Regex("""<br\s*/?>""", RegexOption.IGNORE_CASE), "\n")
+            .replace(Regex("""<[^>]+>"""), " ")
+            .replace("&nbsp;", " ")
+            .replace("&quot;", "\"")
+            .replace("&amp;", "&")
+            .replace("&#39;", "'")
+            .replace(Regex("""\s{2,}"""), " ")
+            .trim()
     }
 }
 

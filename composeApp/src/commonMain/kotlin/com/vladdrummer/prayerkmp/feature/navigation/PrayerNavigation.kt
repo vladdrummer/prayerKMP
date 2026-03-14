@@ -20,6 +20,7 @@ import com.vladdrummer.prayerkmp.feature.bible.BibleScreen
 import com.vladdrummer.prayerkmp.feature.bible.view_model.BibleReaderTarget
 import com.vladdrummer.prayerkmp.feature.bible.view_model.BibleViewModel
 import com.vladdrummer.prayerkmp.feature.cloud.CloudScreen
+import com.vladdrummer.prayerkmp.feature.cloud.CloudSyncInteractor
 import com.vladdrummer.prayerkmp.feature.cloud.view_model.CloudViewModel
 import com.vladdrummer.prayerkmp.feature.contentlist.ContentListScreen
 import com.vladdrummer.prayerkmp.feature.contentlist.view_model.ContentListViewModel
@@ -47,6 +48,7 @@ import com.vladdrummer.prayerkmp.feature.support.SupportScreen
 import com.vladdrummer.prayerkmp.feature.support.view_model.SupportViewModel
 import com.vladdrummer.prayerkmp.feature.subscription.PremiumOfferDialog
 import com.vladdrummer.prayerkmp.feature.subscription.SubscriptionStatusManager
+import com.vladdrummer.prayerkmp.feature.subscription.subscribedTestOverride
 import com.vladdrummer.prayerkmp.feature.navigation.PrayerListScreen.PrayerListScreenType
 import com.vladdrummer.prayerkmp.feature.storage.AppStorageKeys
 import com.vladdrummer.prayerkmp.feature.storage.rememberAppStorage
@@ -69,6 +71,11 @@ fun PrayerNavigation (
         SubscriptionStatusManager(storage = rootStorage, scope = rootScope)
     }
     val subscriptionState by subscriptionManager.state.collectAsStateWithLifecycle()
+    val hasPremiumAccess = if (subscribedTestOverride) {
+        authEmail.isNotBlank()
+    } else {
+        subscriptionState.hasActiveSubscription
+    }
     LaunchedEffect(authEmail) {
         subscriptionManager.start(authEmail)
     }
@@ -79,7 +86,9 @@ fun PrayerNavigation (
     ) {
         composable<MainMenu> {
             val scope = rememberCoroutineScope()
+            val storage = rememberAppStorage()
             var pendingProtectedDestination by remember { mutableStateOf<ProtectedDestination?>(null) }
+            var showPremiumOfferByMenu by remember { mutableStateOf(false) }
             val platformName = remember { getPlatform().name.lowercase() }
             val isAndroidPlatform = platformName.startsWith("android")
             val isIosPlatform = platformName.startsWith("ios")
@@ -98,11 +107,15 @@ fun PrayerNavigation (
                     else -> false
                 }
             }
-            val viewModel : MainViewModel = viewModel { MainViewModel() }
+            val viewModel : MainViewModel = viewModel { MainViewModel(storage) }
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             MainMenuScreen(
                 onNavigateToContentListStarted = onNavigateToContentListStarted,
                 viewState = viewState,
+                onTodayClick = {
+                    val item = viewState.items.firstOrNull { it.id == MainViewModel.READINGS_ITEM_ID } ?: return@MainMenuScreen
+                    navController.navigate(GospelReadings(title = item.title))
+                },
                 onItemClick = { item ->
                     if (item.id == MainViewModel.PERSONAL_DATA_ITEM_ID) {
                         if (requiresAuth(ProtectedDestination.PersonalData) && authEmail.isBlank()) {
@@ -125,9 +138,17 @@ fun PrayerNavigation (
                         else navController.navigate(MessageBoard)
                     } else if (item.id == MainViewModel.CLOUD_ITEM_ID) {
                         if (requiresAuth(ProtectedDestination.Cloud) && authEmail.isBlank()) {
+                            showPremiumOfferByMenu = false
                             pendingProtectedDestination = ProtectedDestination.Cloud
                         }
-                        else navController.navigate(Cloud)
+                        else if (!hasPremiumAccess) {
+                            pendingProtectedDestination = null
+                            showPremiumOfferByMenu = true
+                        } else {
+                            pendingProtectedDestination = null
+                            showPremiumOfferByMenu = false
+                            navController.navigate(Cloud)
+                        }
                     } else if (item.id == MainViewModel.SUPPORT_ITEM_ID) {
                         navController.navigate(Support)
                     } else if (item.id == MainViewModel.READINGS_ITEM_ID) {
@@ -144,19 +165,43 @@ fun PrayerNavigation (
             )
             if (pendingProtectedDestination != null) {
                 GoogleEmailAuthBottomSheet(
-                    onDismiss = { pendingProtectedDestination = null },
+                    onDismiss = {
+                        pendingProtectedDestination = null
+                        showPremiumOfferByMenu = false
+                    },
                     onAuthorized = { email ->
+                        val destination = pendingProtectedDestination
+                        pendingProtectedDestination = null
                         scope.launch {
                             rootStorage.setString(AppStorageKeys.GoogleAccountEmail, email)
-                            when (pendingProtectedDestination) {
+                            when (destination) {
                                 ProtectedDestination.PersonalData -> navController.navigate(PersonalData)
                                 ProtectedDestination.RuleEdit -> navController.navigate(RuleEdit)
                                 ProtectedDestination.MessageBoard -> navController.navigate(MessageBoard)
-                                ProtectedDestination.Cloud -> navController.navigate(Cloud)
+                                ProtectedDestination.Cloud -> {
+                                    val canOpenCloudNow = if (subscribedTestOverride) {
+                                        email.isNotBlank()
+                                    } else {
+                                        subscriptionState.hasActiveSubscription
+                                    }
+                                    if (canOpenCloudNow) {
+                                        showPremiumOfferByMenu = false
+                                        navController.navigate(Cloud)
+                                    } else {
+                                        showPremiumOfferByMenu = true
+                                    }
+                                }
                                 null -> Unit
                             }
-                            pendingProtectedDestination = null
                         }
+                    }
+                )
+            }
+            if (showPremiumOfferByMenu) {
+                PremiumOfferDialog(
+                    onDismiss = {
+                        showPremiumOfferByMenu = false
+                        pendingProtectedDestination = null
                     }
                 )
             }
@@ -386,7 +431,7 @@ fun PrayerNavigation (
         }
         composable<PersonalData> {
             val storage = rememberAppStorage()
-            val isSubscriptionLocked = authEmail.isNotBlank() && !subscriptionState.hasActiveSubscription
+            val isSubscriptionLocked = authEmail.isNotBlank() && !hasPremiumAccess
             var showPremiumOffer by remember { mutableStateOf(isSubscriptionLocked) }
             LaunchedEffect(authEmail) {
                 if (authEmail.isNotBlank()) {
@@ -418,7 +463,7 @@ fun PrayerNavigation (
         }
         composable<RuleEdit> {
             val storage = rememberAppStorage()
-            val isSubscriptionLocked = authEmail.isNotBlank() && !subscriptionState.hasActiveSubscription
+            val isSubscriptionLocked = authEmail.isNotBlank() && !hasPremiumAccess
             var showPremiumOffer by remember { mutableStateOf(isSubscriptionLocked) }
             LaunchedEffect(authEmail) {
                 if (authEmail.isNotBlank()) {
@@ -475,9 +520,21 @@ fun PrayerNavigation (
             SupportScreen(viewState = viewState)
         }
         composable<Cloud> {
-            val viewModel: CloudViewModel = viewModel { CloudViewModel() }
+            val storage = rememberAppStorage()
+            val canUseCloud = authEmail.isNotBlank() && hasPremiumAccess
+            val viewModel: CloudViewModel = viewModel {
+                CloudViewModel(
+                    email = authEmail,
+                    cloudInteractor = CloudSyncInteractor(storage = storage),
+                    canUseCloud = canUseCloud,
+                )
+            }
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
-            CloudScreen(viewState = viewState)
+            CloudScreen(
+                viewState = viewState,
+                onSaveClick = viewModel::save,
+                onRestoreClick = viewModel::restore,
+            )
         }
         composable<Favorites> {
             val storage = rememberAppStorage()
@@ -522,7 +579,7 @@ fun PrayerNavigation (
             val args = backStackEntry.toRoute<PrayerScreen>()
             val storage = rememberAppStorage()
             val scope = rememberCoroutineScope()
-            val isSubscriptionLocked = authEmail.isNotBlank() && !subscriptionState.hasActiveSubscription
+            val isSubscriptionLocked = authEmail.isNotBlank() && !hasPremiumAccess
             var showPremiumOffer by remember { mutableStateOf(false) }
             LaunchedEffect(authEmail) {
                 if (authEmail.isNotBlank()) {

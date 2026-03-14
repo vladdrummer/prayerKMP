@@ -3,6 +3,8 @@ package com.vladdrummer.prayerkmp.feature.mainmenu.view_model
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vladdrummer.prayerkmp.feature.prayer.currentLocalDate
+import com.vladdrummer.prayerkmp.feature.readings.ReadingsRepository
+import com.vladdrummer.prayerkmp.feature.storage.AppStorage
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.all_prayer
 import kotlinproject.composeapp.generated.resources.book_generic
@@ -11,6 +13,8 @@ import kotlinproject.composeapp.generated.resources.saints
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import com.vladdrummer.prayerkmp.feature.tableofcontents.TableOfContentsRepository
 import kotlinproject.composeapp.generated.resources.bible
@@ -22,7 +26,9 @@ import kotlinproject.composeapp.generated.resources.psalter
 import kotlinproject.composeapp.generated.resources.rule_edit
 import kotlinproject.composeapp.generated.resources.support
 
-class MainViewModel(): ViewModel() {
+class MainViewModel(
+    private val storage: AppStorage,
+): ViewModel() {
     companion object {
         const val PERSONAL_DATA_ITEM_ID = 100
         const val RULE_EDIT_ITEM_ID = 101
@@ -113,7 +119,86 @@ class MainViewModel(): ViewModel() {
                     drawable = Res.drawable.support
                 )
             )
-            viewStateFlow.value = MainViewState(items = contentList)
+            viewStateFlow.value = MainViewState(
+                items = contentList,
+                todayPreview = TodayPreviewState(isLoading = true),
+            )
+            loadTodayPreview()
         }
     }
+
+    private fun loadTodayPreview() {
+        viewModelScope.launch {
+            logToday("loadTodayPreview: start")
+            runCatching {
+                coroutineScope {
+                    val refsDeferred = async { ReadingsRepository.loadTodayReferences(storage = storage) }
+                    val calendarDeferred = async { ReadingsRepository.loadTodayCalendarPreview() }
+                    val nameDaysDeferred = async { ReadingsRepository.loadTodayNameDays() }
+                    val refs = refsDeferred.await()
+                    val calendar = calendarDeferred.await()
+                    val nameDays = nameDaysDeferred.await()
+                    TodayHtmlPreview(
+                        celebrating = calendar.celebrating,
+                        fast = calendar.fast,
+                        nameDays = nameDays,
+                        references = refs,
+                        tropariAndKondaki = calendar.hymns.map { hymn ->
+                            TodayHymnUi(
+                                title = hymn.title,
+                                glas = hymn.glas,
+                                text = hymn.text,
+                            )
+                        },
+                    )
+                }
+            }.onSuccess { html ->
+                logToday("loadTodayPreview: refs loaded, count=${html.references.size}")
+                val preview = html
+                logToday(
+                    "loadTodayPreview: parsed celebrating='${preview.celebrating.orEmpty().take(80)}', " +
+                        "fast='${preview.fast.orEmpty().take(80)}', " +
+                        "nameDays='${preview.nameDays.orEmpty().take(80)}', refs=${preview.references.size}"
+                )
+                viewStateFlow.value = viewStateFlow.value.copy(
+                    todayPreview = TodayPreviewState(
+                        isLoading = false,
+                        celebrating = preview.celebrating,
+                        fast = preview.fast,
+                        nameDays = preview.nameDays,
+                        references = preview.references,
+                        tropariAndKondaki = preview.tropariAndKondaki,
+                        errorText = null,
+                    )
+                )
+                logToday("loadTodayPreview: state updated success")
+            }.onFailure {
+                logToday("loadTodayPreview: failed ${it::class.simpleName}: ${it.message}")
+                viewStateFlow.value = viewStateFlow.value.copy(
+                    todayPreview = TodayPreviewState(
+                        isLoading = false,
+                        celebrating = null,
+                        fast = null,
+                        nameDays = null,
+                        references = emptyList(),
+                        tropariAndKondaki = emptyList(),
+                        errorText = "Не удалось загрузить блок \"Сегодня\"",
+                    )
+                )
+                logToday("loadTodayPreview: state updated with error")
+            }
+        }
+    }
+
+    private fun logToday(message: String) {
+        println("today-preview: $message")
+    }
 }
+
+private data class TodayHtmlPreview(
+    val celebrating: String?,
+    val fast: String?,
+    val nameDays: String?,
+    val references: List<String>,
+    val tropariAndKondaki: List<TodayHymnUi>,
+)

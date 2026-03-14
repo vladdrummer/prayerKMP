@@ -415,6 +415,20 @@ class PrayerTextBuilder(
     }
 
     private suspend fun loadPersonalContext(): PersonalContext {
+        val hasPremium = storage.booleanFlow(AppStorageKeys.PremiumSubscriptionActive, false).first()
+        if (!hasPremium) {
+            return PersonalContext(
+                nameImenit = DEFAULT_NAME_IMENIT,
+                duhovnik = DEFAULT_DUHOVNIK,
+                isMale = false,
+                parents = listOf(PersonalPerson()),
+                relatives = listOf(PersonalPerson()),
+                children = listOf(PersonalPerson()),
+                godChildren = listOf(PersonalPerson()),
+                benefactors = listOf(PersonalPerson()),
+                dead = listOf(PersonalPerson()),
+            )
+        }
         val name = storage.stringFlow(AppStorageKeys.NameImenit, DEFAULT_NAME_IMENIT).first()
         val duhovnik = storage.stringFlow(AppStorageKeys.Duhovnik, DEFAULT_DUHOVNIK).first()
         val isMale = storage.booleanFlow(AppStorageKeys.MyGenderMale, false).first()

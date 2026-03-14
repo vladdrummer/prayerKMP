@@ -43,6 +43,7 @@ data class AggregatedSubscriptionStatus(
 
 class SubscriptionAggregator(
     private val sources: List<SubscriptionSourceChecker>,
+    private val subscribedTest: Boolean = subscribedTestOverride,
 ) {
     suspend fun resolve(email: String): AggregatedSubscriptionStatus {
         if (email.isBlank()) {
@@ -54,6 +55,22 @@ class SubscriptionAggregator(
                 checkedAtEpochMillis = 0L,
                 resolved = true,
                 checks = emptyList()
+            )
+        }
+        if (subscribedTest) {
+            return AggregatedSubscriptionStatus(
+                email = email,
+                hasActiveSubscription = true,
+                source = SubscriptionSourceType.Backend,
+                expirationAt = null,
+                checkedAtEpochMillis = 0L,
+                resolved = true,
+                checks = listOf(
+                    SubscriptionSourceResult.Active(
+                        source = SubscriptionSourceType.Backend,
+                        expirationAt = null,
+                    )
+                )
             )
         }
 
